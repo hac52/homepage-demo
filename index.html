@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schicht für Schicht 3D Drucke – Stuttgart</title>
+    <link rel="icon" type="image/png" href="icons/sfs3d-logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Farbvariablen für White Mode (Light Mode) */
+        :root {
+            --bg-overlay: rgba(248, 249, 255, 0.86);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --modal-bg: #ffffff;
+            --text-color: #2b2d42;
+            --text-muted: #5c607a;
+            --primary: #ff477e;
+            --secondary: #0077b6;
+            --accent: #fee440;
+            --purple: #9b5de5;
+            --border-color: rgba(226, 232, 240, 0.9);
+            --shadow: 0 10px 25px rgba(43, 45, 66, 0.1);
+        }
+
+        /* Farbvariablen für Dark Mode */
+        [data-theme="dark"] {
+            --bg-overlay: rgba(19, 17, 28, 0.84);
+            --card-bg: rgba(30, 27, 46, 0.82);
+            --modal-bg: #1e1b2e;
+            --text-color: #f8f9ff;
+            --text-muted: #a9adc1;
+            --primary: #ff5c8a;
+            --secondary: #00b4d8;
+            --accent: #fee440;
+            --purple: #b5179e;
+            --border-color: rgba(47, 43, 69, 0.9);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
+                url('icons/background.jpg'), 
+                url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: #13111c;
+        }
+
+        h1, h2, h3, .logo-text {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--secondary);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            height: 44px;
+            width: auto;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--purple), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            display: block;
+            margin-top: -4px;
+        }
+
+        .theme-btn {
+            background: var(--purple);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(155, 93, 229, 0.35);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Hero Bereich */
+        .hero {
+            text-align: center;
+            padding: 3rem 5% 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 2.6rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* Such- & Filterbereich */
+        .filter-section {
+            max-width: 1000px;
+            margin: 1.5rem auto 3rem;
+            padding: 1.3rem;
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            border: 2px dashed var(--primary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .filter-input, .filter-select {
+            padding: 0.8rem 1.2rem;
+            border-radius: 15px;
+            border: 2px solid var(--border-color);
+            background-color: var(--modal-bg);
+            color: var(--text-color);
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            min-width: 210px;
+            flex: 1;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        /* Produkt-Grid */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto 4rem;
+            padding: 0 5%;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 2.2rem;
+        }
+
+        .product-card {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+        }
+
+        .image-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 260px;
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.35s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.06);
+        }
+
+        .detail-badge {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(19, 17, 28, 0.78);
+            color: #ffffff;
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .product-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            background-color: var(--modal-bg);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .tag.motto {
+            color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .product-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Kurzbeschreibung auf max. 5 Zeilen begrenzt */
+        .product-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .shop-buttons {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: auto;
+        }
+
+        .btn {
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            padding: 0.7rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: white;
+        }
+
+        .btn-shopify {
+            background-color: #95bf47;
+        }
+
+        .btn-etsy {
+            background-color: #f1641e;
+        }
+
+        .btn:hover {
+            opacity: 0.92;
+            transform: scale(1.03);
+        }
+
+        /* Footer & Rechtliches */
+        footer {
+            text-align: center;
+            padding: 2rem 5%;
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 3px solid var(--accent);
+            color: var(--text-muted);
+            margin-top: auto;
+        }
+
+        .legal-links {
+            margin-top: 0.8rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .legal-btn {
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Modal für Rechtliches */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-box {
+            background-color: var(--modal-bg);
+            color: var(--text-color);
+            max-width: 700px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2rem;
+            border-radius: 25px;
+            border: 2px solid var(--secondary);
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-box h2 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .modal-box h3 {
+            margin: 1.2rem 0 0.4rem;
+            font-size: 1.1rem;
+        }
+
+        .placeholder {
+            background-color: rgba(254, 228, 64, 0.25);
+            color: var(--text-color);
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            border: 1px dashed var(--accent);
+            font-weight: 700;
+        }
+
+        .no-results {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 3rem;
+            font-size: 1.2rem;
+            display: none;
+            background: var(--card-bg);
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="brand">
+            <img src="icons/sfs3d-logo.png" alt="SFS 3D Stuttgart Logo" class="brand-logo" onerror="this.style.display='none'">
+            <div>
+                <span class="logo-text">Schicht für Schicht 3D Drucke</span>
+                <span class="logo-sub">SFS 3D • Stuttgart</span>
+            </div>
+        </a>
+        <button class="theme-btn" id="themeToggle">☀️ White Mode</button>
+    </header>
+
+    <section class="hero">
+        <h1>Bunte Ideen aus dem 3D-Drucker!</h1>
+        <p>Entdecke liebevoll gestaltete Einzelstücke, Deko und praktische Helfer aus Stuttgart – Schicht für Schicht für dich gedruckt. Klicke auf ein Produkt für alle Details!</p>
+    </section>
+
+    <div class="container">
+        <section class="filter-section">
+            <input type="text" id="searchInput" class="filter-input" placeholder="🔍 Nach Stichwort suchen...">
+            
+            <select id="colorFilter" class="filter-select">
+                <option value="alle">🎨 Alle Farben</option>
+                <option value="Orange">Orange</option>
+                <option value="Blau">Blau / Eisblau</option>
+                <option value="Bunt">Bunt / Regenbogen</option>
+                <option value="Weiß">Weiß</option>
+                <option value="Schwarz">Schwarz</option>
+            </select>
+
+            <select id="mottoFilter" class="filter-select">
+                <option value="alle">✨ Alle Mottos</option>
+                <option value="Weihnachten">Weihnachten & Winter</option>
+                <option value="Deko">Deko & Wohnen</option>
+                <option value="Alltag">Praktischer Alltag</option>
+                <option value="Geschenk">Geschenkideen</option>
+            </select>
+        </section>
+
+        <div class="product-grid" id="productGrid">
+            
+            <!-- Produkt 1: Moderner Lamellen-Hirsch (verlinkt auf produkt-hirsch.html) -->
+            <article class="product-card" data-color="Orange" data-motto="Weihnachten" onclick="window.location.href='produkt-hirsch.html'">
+                <div class="image-wrapper">
+                    <img src="modelle/hirsch-orange.jpg" alt="Moderner Lamellen-Hirsch in Orange" class="product-image">
+                    <span class="detail-badge">🔍 Details & Großbild</span>
+                </div>
+                <div class="product-content">
+                    <div class="tags">
+                        <span class="tag">🎨 Orange</span>
+                        <span class="tag motto">✨ Weihnachten</span>
+                    </div>
+                    <h3 class="product-title">Moderner Lamellen-Hirsch</h3>
+                    <p class="product-desc">
+                        Stilvolle Hirsch-Skulptur im modernen Lamellen-Design für deine Herbst- und Weihnachtsdeko.
+                        Durch die feinen vertikalen Schlitze entsteht ein faszinierender 3D-Tiefeneffekt.
+                        Gefertigt aus hochwertigem, kräftig orangenem PLA-Filament.
+                        Ein echter Blickfang auf Sideboard, Fensterbank oder Festtafel!
+                    </p>
+                    <div class="shop-buttons" onclick="event.stopPropagation()">
+                        <a href="#" class="btn btn-shopify">Auf Shopify kaufen</a>
+                        <a href="#" class="btn btn-etsy">Auf Etsy kaufen</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Produkt 2: Winterwald-Tannenbaum (verlinkt auf produkt-weihnachtsbaum.html) -->
+            <article class="product-card" data-color="Blau" data-motto="Weihnachten" onclick="window.location.href='produkt-weihnachtsbaum.html'">
+                <div class="image-wrapper">
+                    <img src="modelle/weihnachtsbaum-blau.jpg" alt="Winterwald-Tannenbaum in Eisblau" class="product-image">
+                    <span class="detail-badge">🔍 Details & Großbild</span>
+                </div>
+                <div class="product-content">
+                    <div class="tags">
+                        <span class="tag">🎨 Blau</span>
+                        <span class="tag motto">✨ Weihnachten</span>
+                    </div>
+                    <h3 class="product-title">Winterwald-Tannenbaum</h3>
+                    <p class="product-desc">
+                        Detailverliebter 3D-Weihnachtsbaum mit Sternspitze, Sternenband und einer kleinen Hirsch-Szene im Inneren.
+                        Das lichtdurchlässige Eisblau sorgt in Kombination mit einem LED-Teelicht für eine gemütliche Atmosphäre.
+                        Bitte ausschließlich mit LED-Lichtern verwenden (keine echte Kerze).
+                    </p>
+                    <div class="shop-buttons" onclick="event.stopPropagation()">
+                        <a href="#" class="btn btn-shopify">Auf Shopify kaufen</a>
+                        <a href="#" class="btn btn-etsy">Auf Etsy kaufen</a>
+                    </div>
+                </div>
+            </article>
+
+            <div class="no-results" id="noResults">
+                😕 Leider keine 3D-Drucke für diese Filterauswahl gefunden. Probier eine andere Kombination!
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Schicht für Schicht 3D Drucke • Stuttgart (schichtfuerschicht.de)</p>
+        <div class="legal-links">
+            <button class="legal-btn" onclick="openModal('impressumModal')">Impressum</button>
+            <button class="legal-btn" onclick="openModal('datenschutzModal')">Datenschutzerklärung</button>
+        </div>
+    </footer>
+
+    <!-- Impressum Modal -->
+    <div class="modal-overlay" id="impressumModal" onclick="closeModalOnBg(event, 'impressumModal')">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('impressumModal')">×</button>
+            <h2>Impressum</h2>
+            <h3>Angaben gemäß § 5 DDG</h3>
+            <p>
+                <span class="placeholder">[VORNAME NACHNAME]</span><br>
+                <span class="placeholder">[UNTERNEHMENSNAME / ZUSATZ, z. B. Schicht für Schicht 3D Drucke]</span><br>
+                <span class="placeholder">[STRASSE UND HAUSNUMMER]</span><br>
+                <span class="placeholder">[PLZ]</span> Stuttgart
+            </p>
+            <h3>Kontakt</h3>
+            <p>
+                Telefon: <span class="placeholder">[TELEFONNUMMER]</span><br>
+                E-Mail: <span class="placeholder">[E-MAIL-ADRESSE]</span>
+            </p>
+            <h3>Umsatzsteuer-ID</h3>
+            <p>
+                <span class="placeholder">[UMSATZSTEUER-ID gemäß § 27a UStG ODER Hinweis: Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.]</span>
+            </p>
+            <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+            <p>
+                <span class="placeholder">[VORNAME NACHNAME]</span>, Anschrift wie oben.
+            </p>
+        </div>
+    </div>
+
+    <!-- Datenschutz Modal -->
+    <div class="modal-overlay" id="datenschutzModal" onclick="closeModalOnBg(event, 'datenschutzModal')">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('datenschutzModal')">×</button>
+            <h2>Datenschutzerklärung</h2>
+            <h3>1. Verantwortlicher</h3>
+            <p>
+                Verantwortlich für die Datenverarbeitung auf dieser Website ist:<br>
+                <span class="placeholder">[VORNAME NACHNAME]</span>, <span class="placeholder">[STRASSE UND HAUSNUMMER]</span>, <span class="placeholder">[PLZ]</span> Stuttgart, E-Mail: <span class="placeholder">[E-MAIL-ADRESSE]</span>.
+            </p>
+            <h3>2. Hosting und Server-Logfiles</h3>
+            <p>
+                Diese Website wird gehostet bei <span class="placeholder">[NAME UND ANSCHRIFT DES HOSTING-ANBIETERS]</span>. Beim Aufruf der Seiten werden technisch notwendige Verbindungsdaten (z. B. IP-Adresse, Zeitpunkt des Zugriffs) verarbeitet.
+            </p>
+            <h3>3. Externe Links zu Shopify und Etsy</h3>
+            <p>
+                Diese Seite dient als Produktübersicht. Beim Klick auf die Kauf-Buttons werden Sie auf unsere externen Shops bei <strong>Shopify</strong> (<span class="placeholder">[LINK ZU DEINEM SHOPIFY-SHOP]</span>) oder <strong>Etsy</strong> (<span class="placeholder">[LINK ZU DEINEM ETSY-SHOP]</span>) weitergeleitet. Dort gelten die Datenschutzbestimmungen des jeweiligen Plattformbetreibers.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Theme-Speicher (damit Dark/White Mode auf allen Unterseiten erhalten bleibt)
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        function applyTheme(theme) {
+            htmlElement.setAttribute('data-theme', theme);
+            themeToggle.textContent = theme === 'dark' ? '☀️ White Mode' : '🌙 Dark Mode';
+            localStorage.setItem('sfs3d-theme', theme);
+        }
+
+        const savedTheme = localStorage.getItem('sfs3d-theme') || 'dark';
+        applyTheme(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const nextTheme = htmlElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            applyTheme(nextTheme);
+        });
+
+        // Filter-Logik
+        const searchInput = document.getElementById('searchInput');
+        const colorFilter = document.getElementById('colorFilter');
+        const mottoFilter = document.getElementById('mottoFilter');
+        const cards = document.querySelectorAll('.product-card');
+        const noResults = document.getElementById('noResults');
+
+        function filterProducts() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedColor = colorFilter.value;
+            const selectedMotto = mottoFilter.value;
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const title = card.querySelector('.product-title').textContent.toLowerCase();
+                const desc = card.querySelector('.product-desc').textContent.toLowerCase();
+                const cardColor = card.getAttribute('data-color');
+                const cardMotto = card.getAttribute('data-motto');
+
+                const matchesSearch = title.includes(searchTerm) || desc.includes(searchTerm);
+                const matchesColor = selectedColor === 'alle' || cardColor === selectedColor;
+                const matchesMotto = selectedMotto === 'alle' || cardMotto === selectedMotto;
+
+                if (matchesSearch && matchesColor && matchesMotto) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        searchInput.addEventListener('input', filterProducts);
+        colorFilter.addEventListener('change', filterProducts);
+        mottoFilter.addEventListener('change', filterProducts);
+
+        // Modals
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+        function closeModalOnBg(event, id) {
+            if (event.target.id === id) closeModal(id);
+        }
+    </script>
+</body>
+</html>
