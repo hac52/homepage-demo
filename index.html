@@ -338,39 +338,15 @@
 
     <script>
         let allProducts = [];
-
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on("init", user => {
-                if (!user) {
-                    window.netlifyIdentity.on("login", () => {
-                        document.location.href = "/admin/";
-                    });
-                }
-            });
-        }
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        const themeToggle = document.getElementById('themeToggle');
-        const htmlEl = document.documentElement;
-        const savedTheme = localStorage.getItem('sfs-theme') || 'light';
-        htmlEl.setAttribute('data-theme', savedTheme);
-        themeToggle.textContent = savedTheme === 'dark' ? '☀️ White Mode' : '🌙 Dark Mode';
-
-        themeToggle.addEventListener('click', () => {
-            const next = htmlEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-            htmlEl.setAttribute('data-theme', next);
-            localStorage.setItem('sfs-theme', next);
-            themeToggle.textContent = next === 'dark' ? '☀️ White Mode' : '🌙 Dark Mode';
-        });
+        let extraFilters = [];
 
         async function loadProducts() {
             try {
-                const res = await fetch('produkte.json?t=' + Date.now());
+                const res = await fetch('./produkte.json?t=' + Date.now());
                 const data = await res.json();
                 allProducts = data.produkte || [];
-                populateFilters();
+                extraFilters = data.zusatzfilter || [];
+                populateFilters(data.farben || [], data.mottos || []);
                 renderProducts(allProducts);
 
                 const hash = window.location.hash.replace('#produkt-', '');
@@ -379,58 +355,73 @@
                     if (found) showDetail(found);
                 }
             } catch (e) {
-                document.getElementById('productGrid').innerHTML = '<p>Produkte konnten nicht geladen werden. Bitte prüfe die produkte.json.</p>';
+                document.getElementById('productGrid').innerHTML = '<p>Produkte konnten nicht geladen werden.</p>';
             }
         }
 
-        function populateFilters() {
-            const colors = [...new Set(allProducts.map(p => p.farbe))];
-            const mottos = [...new Set(allProducts.map(p => p.motto))];
+        function populateFilters(savedColors, savedMottos) {
+            const filterSection = document.querySelector('.filter-section');
             const colorSel = document.getElementById('colorFilter');
             const mottoSel = document.getElementById('mottoFilter');
 
+            // Farben & Mottos aus Admin-Liste und Produkten zusammenführen
+            const colors = [...new Set([...savedColors, ...allProducts.map(p => p.farbe)])].filter(Boolean);
+            const mottos = [...new Set([...savedMottos, ...allProducts.map(p => p.motto)])].filter(Boolean);
+
+            colorSel.innerHTML = '<option value="alle">🎨 Alle Farben</option>';
+            mottoSel.innerHTML = '<option value="alle">✨ Alle Mottos</option>';
+
             colors.forEach(c => colorSel.innerHTML += `<option value="${c}">${c}</option>`);
             mottos.forEach(m => mottoSel.innerHTML += `<option value="${m}">${m}</option>`);
-        }
 
-        function renderProducts(list) {
-            const grid = document.getElementById('productGrid');
-            if (list.length === 0) {
-                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:2rem;">Keine passenden 3D-Drucke gefunden.</p>';
-                return;
-            }
-            grid.innerHTML = list.map(p => `
-                <article class="product-card" onclick="openProduct('${p.id}')">
-                    <img src="${p.bild}" alt="${p.titel}" class="product-image">
-                    <div class="product-content">
-                        <div class="tags">
-                            <span class="tag">🎨 ${p.farbe}</span>
-                            <span class="tag motto">✨ ${p.motto}</span>
-                        </div>
-                        <h3 class="product-title">${p.titel}</h3>
-                        <p class="product-desc">${p.kurzbeschreibung}</p>
-                        <div class="shop-buttons" onclick="event.stopPropagation()">
-                            <a href="${p.shopify || '#'}" target="_blank" class="btn btn-shopify">Auf Shopify kaufen</a>
-                            <a href="${p.etsy || '#'}" target="_blank" class="btn btn-etsy">Auf Etsy kaufen</a>
-                        </div>
-                    </div>
-                </article>
-            `).join('');
+            // Alte dynamische Dropdowns entfernen, falls neu geladen wird
+            document.querySelectorAll('.dynamic-filter').forEach(el => el.remove());
+
+            // Neue Filter-Kategorien aus dem Admin-Panel als Dropdown einfügen
+            extraFilters.forEach(filterGroup => {
+                if (!filterGroup.kategorie || !filterGroup.werte) return;
+                const select = document.createElement('select');
+                select.className = 'filter-select dynamic-filter';
+                select.setAttribute('data-kategorie', filterGroup.kategorie);
+                select.innerHTML = `<option value="alle">🏷️ Alle ${filterGroup.kategorie}</option>`;
+                
+                filterGroup.werte.forEach(w => {
+                    select.innerHTML += `<option value="${w}">${w}</option>`;
+                });
+
+                select.addEventListener('change', filterProducts);
+                filterSection.appendChild(select);
+            });
         }
 
         function filterProducts() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const color = document.getElementById('colorFilter').value;
             const motto = document.getElementById('mottoFilter').value;
+            const dynamicSelects = document.querySelectorAll('.dynamic-filter');
 
             const filtered = allProducts.filter(p => {
                 const matchText = p.titel.toLowerCase().includes(term) || p.kurzbeschreibung.toLowerCase().includes(term);
                 const matchColor = color === 'alle' || p.farbe === color;
                 const matchMotto = motto === 'alle' || p.motto === motto;
-                return matchText && matchColor && matchMotto;
+
+                // Prüfung aller zusätzlichen Filter-Kategorien
+                let matchExtra = true;
+                dynamicSelects.forEach(sel => {
+                    const selectedVal = sel.value;
+                    if (selectedVal !== 'alle') {
+                        const kat = sel.getAttribute('data-kategorie');
+                        const props = p.eigenschaften || [];
+                        const hasMatch = props.some(item => item.kategorie === kat && item.wert === selectedVal);
+                        if (!hasMatch) matchExtra = false;
+                    }
+                });
+
+                return matchText && matchColor && matchMotto && matchExtra;
             });
             renderProducts(filtered);
         }
+
 
         function openProduct(id) {
             const prod = allProducts.find(p => p.id === id);
