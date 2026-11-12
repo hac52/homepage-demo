@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: DEIN-GITHUB-USER/DEIN-REPOSITORY
   branch: main
 
 media_folder: "modelle"
