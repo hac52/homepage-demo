@@ -530,6 +530,22 @@
         document.getElementById('colorFilter').addEventListener('change', filterProducts);
         document.getElementById('mottoFilter').addEventListener('change', filterProducts);
 
+                // Reagiert auf den Zurück- und Vorwärts-Pfeil im Browser
+        window.addEventListener('popstate', () => {
+            const hash = window.location.hash.replace('#produkt-', '');
+            if (hash) {
+                const found = allProducts.find(p => p.id === hash);
+                if (found) {
+                    showDetail(found);
+                    return;
+                }
+            }
+            // Kein Produkt-Hash mehr in der URL -> Übersicht wieder einblenden
+            document.getElementById('detailSection').style.display = 'none';
+            document.getElementById('overviewSection').style.display = 'block';
+        });
+
+
         function openModal(id) {
             const modal = document.getElementById(id);
             if (modal) {
