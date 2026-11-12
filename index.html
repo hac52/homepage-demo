@@ -336,7 +336,6 @@
             Sie haben jederzeit das Recht auf unentgeltliche Auskunft, Berichtigung, Sperrung oder Löschung Ihrer gespeicherten personenbezogenen Daten sowie ein Beschwerderecht bei der zuständigen Aufsichtsbehörde.</p>
         </div>
     </div>
-    </footer>
 
     <script>
         let allProducts = [];
@@ -530,6 +529,20 @@
         document.getElementById('searchInput').addEventListener('input', filterProducts);
         document.getElementById('colorFilter').addEventListener('change', filterProducts);
         document.getElementById('mottoFilter').addEventListener('change', filterProducts);
+
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
 
         loadProducts();
     </script>
