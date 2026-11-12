@@ -1,4 +1,4 @@
-const LM_STUDIO_BASE_URL = "https://desktop-uvddnig.tail1dcff0.ts.net"; // Tailscale-URL anpassen
+const LM_STUDIO_BASE_URL = "http://100.82.62.74:1234"; // Tailscale-URL anpassen
 const MODEL_NAME = "local-model";
 
 let shopProducts = [];
