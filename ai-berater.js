@@ -1,5 +1,5 @@
 const LM_STUDIO_BASE_URL = "https://desktop-uvddnig.tail1dcff0.ts.net"; // Tailscale-URL anpassen
-const MODEL_NAME = "gemma-4-e4b";
+const MODEL_NAME = "google/gemma-4-e4b";
 
 let shopProducts = [];
 
