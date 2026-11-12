@@ -438,7 +438,7 @@
                 const extraTags = (p.eigenschaften || []).map(e => `<span class="tag extra">🏷️ ${e.wert}</span>`).join('');
                 return `
                 <article class="product-card" onclick="openProduct('${p.id}')">
-                    <img src="${p.bild || ''}" alt="${p.titel || ''}" class="product-image">
+                    <img src="${fixImagePath(p.bild)}" alt="${p.titel || ''}" class="product-image">
                     <div class="product-content">
                         <div class="tags">
                             ${p.farbe ? `<span class="tag">🎨 ${p.farbe}</span>` : ''}
@@ -502,7 +502,7 @@
 
             document.getElementById('detailContent').innerHTML = `
                 <div>
-                    <img src="${p.bild || ''}" alt="${p.titel || ''}" class="detail-image" onclick="window.open('${p.bild || ''}', '_blank')" title="Klicken für volle Bildgröße">
+                    <img src="${fixImagePath(p.bild)}" alt="${p.titel || ''}" class="detail-image" onclick="window.open('${p.bild || ''}', '_blank')" title="Klicken für volle Bildgröße">
                 </div>
                 <div>
                     <div class="tags">
