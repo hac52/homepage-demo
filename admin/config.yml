@@ -8,26 +8,36 @@ public_folder: "modelle"
 
 collections:
   - name: "shop"
-    label: "3D-Druck Produkte"
+    label: "3D-Druck Shop verwalten"
     files:
       - name: "produkte"
-        label: "Alle Produkte verwalten"
+        label: "Produkte & Filter"
         file: "produkte.json"
         fields:
+          - name: "farben"
+            label: "🎨 Verfügbare Farben (Filter)"
+            widget: "list"
+            allow_add: true
+            field: { label: "Farbe", name: "farbe", widget: "string" }
+          - name: "mottos"
+            label: "✨ Verfügbare Mottos (Filter)"
+            widget: "list"
+            allow_add: true
+            field: { label: "Motto", name: "motto", widget: "string" }
           - name: "produkte"
-            label: "Produktliste"
+            label: "📦 Alle 3D-Druck Produkte"
             widget: "list"
             summary: "{{fields.titel}} ({{fields.farbe}} • {{fields.motto}})"
             fields:
               - { label: "Produkt-ID (ohne Leerzeichen, z.B. drache-bunt)", name: "id", widget: "string" }
               - { label: "Produktname", name: "titel", widget: "string" }
-              - label: "Hauptfarbe"
+              - label: "Hauptfarbe (auswählen oder neu eintippen)"
                 name: "farbe"
-                widget: "select"
+                widget: "combobox"
                 options: ["Orange", "Blau", "Bunt", "Pink", "Weiß", "Schwarz", "Grün", "Gelb", "Rot"]
-              - label: "Motto / Kategorie"
+              - label: "Motto / Kategorie (auswählen oder neu eintippen)"
                 name: "motto"
-                widget: "select"
+                widget: "combobox"
                 options: ["Weihnachten", "Deko", "Gaming", "Alltag", "Geschenk"]
               - { label: "Produktfoto", name: "bild", widget: "image" }
               - { label: "Kurzbeschreibung (Startseite, max. 5 Zeilen)", name: "kurzbeschreibung", widget: "text" }
