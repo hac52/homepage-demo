@@ -15,15 +15,27 @@ collections:
         file: "produkte.json"
         fields:
           - name: "farben"
-            label: "🎨 Verfügbare Farben (Filter)"
+            label: "🎨 Verfügbare Farben (Standard-Filter)"
             widget: "list"
             allow_add: true
             field: { label: "Farbe", name: "farbe", widget: "string" }
           - name: "mottos"
-            label: "✨ Verfügbare Mottos (Filter)"
+            label: "✨ Verfügbare Mottos (Standard-Filter)"
             widget: "list"
             allow_add: true
             field: { label: "Motto", name: "motto", widget: "string" }
+          - name: "zusatzfilter"
+            label: "🏷️ Eigene Filter-Kategorien (z.B. Material, Größe, Anlass)"
+            widget: "list"
+            allow_add: true
+            summary: "{{fields.kategorie}}"
+            fields:
+              - { label: "Name der Filter-Kategorie (z.B. Material)", name: "kategorie", widget: "string" }
+              - name: "werte"
+                label: "Auswahlmöglichkeiten (z.B. PLA, PETG, Flexibel)"
+                widget: "list"
+                allow_add: true
+                field: { label: "Wert", name: "wert", widget: "string" }
           - name: "produkte"
             label: "📦 Alle 3D-Druck Produkte"
             widget: "list"
@@ -31,18 +43,26 @@ collections:
             fields:
               - { label: "Produkt-ID (ohne Leerzeichen, z.B. drache-bunt)", name: "id", widget: "string" }
               - { label: "Produktname", name: "titel", widget: "string" }
-              - label: "Hauptfarbe (auswählen oder neu eintippen)"
+              - label: "Hauptfarbe"
                 name: "farbe"
                 widget: "combobox"
                 options: ["Orange", "Blau", "Bunt", "Pink", "Weiß", "Schwarz", "Grün", "Gelb", "Rot"]
-              - label: "Motto / Kategorie (auswählen oder neu eintippen)"
+              - label: "Motto / Kategorie"
                 name: "motto"
                 widget: "combobox"
                 options: ["Weihnachten", "Deko", "Gaming", "Alltag", "Geschenk"]
+              - name: "eigenschaften"
+                label: "🏷️ Zusätzliche Filter-Werte zuweisen"
+                widget: "list"
+                required: false
+                summary: "{{fields.kategorie}}: {{fields.wert}}"
+                fields:
+                  - { label: "Filter-Kategorie (exakt wie oben angelegt, z.B. Material)", name: "kategorie", widget: "string" }
+                  - { label: "Zugewiesener Wert (z.B. PLA)", name: "wert", widget: "string" }
               - { label: "Produktfoto", name: "bild", widget: "image" }
               - { label: "Kurzbeschreibung (Startseite, max. 5 Zeilen)", name: "kurzbeschreibung", widget: "text" }
               - { label: "Ausführliche Beschreibung (Detailseite)", name: "beschreibung", widget: "text" }
               - { label: "Maße (z.B. Höhe: 20 cm)", name: "masse", widget: "string", required: false }
-              - { label: "Material / Filament", name: "material", widget: "string", default: "PLA" }
+              - { label: "Material / Filament (Text für Detailseite)", name: "material", widget: "string", default: "PLA" }
               - { label: "Shopify-Link", name: "shopify", widget: "string", default: "#" }
               - { label: "Etsy-Link", name: "etsy", widget: "string", default: "#" }
