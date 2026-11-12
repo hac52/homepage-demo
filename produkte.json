@@ -8,22 +8,32 @@
     "Schwarz",
     "Grün",
     "Gelb",
-    "Rot"
+    "Rot",
+    "Grau"
   ],
   "mottos": [
     "Weihnachten",
     "Deko",
     "Gaming",
     "Alltag",
-    "Geschenk"
+    "Geschenk",
+    "Kirche",
+    "Glaube",
+    "Religion"
   ],
   "zusatzfilter": [
     {
       "kategorie": "Material",
       "werte": [
-        "PLA",
         "PETG",
+        "PLA",
         "Flexibel"
+      ]
+    },
+    {
+      "kategorie": "Material",
+      "werte": [
+        "PETG"
       ]
     }
   ],
@@ -63,6 +73,20 @@
       "beschreibung": "Ein zauberhafter Blickfang für die Advents- und Winterzeit: Im Inneren dieses eisblauen Tannenbaums verbirgt sich eine filigrane Waldlandschaft mit Bäumen und einem stolzen Hirsch.\n\nSobald du ein elektrisches LED-Teelicht hineinstellst, leuchten die Sterne und Schneeflocken an der Außenhülle stimmungsvoll auf.\n\nWichtiger Sicherheitshinweis: Bitte ausschließlich mit elektrischen LED-Lichtern verwenden – kein echtes Feuer!",
       "masse": "Höhe: ca. 19 cm | Durchmesser: ca. 12 cm",
       "material": "Transluzentes Eisblau-PLA",
+      "shopify": "#",
+      "etsy": "#"
+    },
+    {
+      "id": "OsterkreuzKreuz-Grau",
+      "titel": "Osterkreuz",
+      "farbe": "Grau",
+      "motto": "Religion",
+      "eigenschaften": [],
+      "bild": "/modelle/20260915_193935.jpg",
+      "kurzbeschreibung": "Osterkreuz",
+      "beschreibung": "Osterkreuz Grau",
+      "masse": "20cm",
+      "material": "PETG",
       "shopify": "#",
       "etsy": "#"
     }
