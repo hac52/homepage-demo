@@ -75,7 +75,12 @@
       "titel": "Osterkreuz",
       "farbe": "Grau",
       "motto": "Religion",
-      "eigenschaften": [],
+      "eigenschaften": [
+        {
+          "kategorie": "Material",
+          "wert": "PETG"
+        }
+      ],
       "bild": "/modelle/osterkreuz.png",
       "kurzbeschreibung": "Osterkreuz",
       "beschreibung": "Osterkreuz Grau",
