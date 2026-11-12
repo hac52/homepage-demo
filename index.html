@@ -241,7 +241,11 @@
             .detail-grid { grid-template-columns: 1fr; }
         }
     </style>
+    <link rel="stylesheet" href="ai-berater.css">
+
 </head>
+    <script src="ai-berater.js"></script>
+
 <body>
 
     <header>
@@ -282,6 +286,21 @@
             <div class="detail-grid" id="detailContent"></div>
         </div>
     </div>
+<button id="ai-fab" class="ai-fab" aria-label="KI-Produktberater öffnen">💬</button>
+
+<div id="ai-chat-window" class="ai-chat-window">
+  <div class="ai-chat-header">
+    <span><span id="ai-status-dot" class="ai-status-dot"></span>KI-Produktberater</span>
+    <button id="ai-chat-close" style="background:none;border:none;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+  </div>
+  <div id="ai-chat-messages" class="ai-chat-messages">
+    <div class="ai-msg bot">Hallo! Wie kann ich dir bei der Produktauswahl helfen?</div>
+  </div>
+  <div class="ai-chat-input-area">
+    <input type="text" id="ai-chat-input" placeholder="Frage zum Sortiment stellen...">
+    <button id="ai-chat-send">Senden</button>
+  </div>
+</div>
 
     <footer>
         <p>© 2026 Schicht für Schicht 3D Drucke • Stuttgart • Handgemacht im 3D-Druckverfahren</p>
