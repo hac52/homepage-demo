@@ -6,6 +6,15 @@
   <title>Admin Panel – Schicht für Schicht 3D Drucke</title>
 </head>
 <body>
-  <script src="https://unpkg.com" type="module"></script>
+  <script>
+    // Kurzer Selbsttest, ob config.yml erreichbar ist
+    fetch('./config.yml')
+      .then(res => {
+        if (!res.ok) {
+          document.body.innerHTML = '<div style="font-family:sans-serif;padding:2rem;color:#b00020;"><h2>⚠️ Fehler: admin/config.yml wurde nicht gefunden (Status ' + res.status + ')</h2><p>Bitte prüfe, ob die Datei exakt <b>config.yml</b> heißt und im Ordner <b>admin/</b> liegt.</p></div>';
+        }
+      });
+  </script>
+  <script src="https://jsdelivr.net" type="module"></script>
 </body>
 </html>
