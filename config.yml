@@ -1,0 +1,37 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "modelle"
+public_folder: "modelle"
+
+collections:
+  - name: "shop"
+    label: "3D-Druck Produkte"
+    files:
+      - name: "produkte"
+        label: "Alle Produkte verwalten"
+        file: "produkte.json"
+        fields:
+          - name: "produkte"
+            label: "Produktliste"
+            widget: "list"
+            summary: "{{fields.titel}} ({{fields.farbe}} • {{fields.motto}})"
+            fields:
+              - { label: "Produkt-ID (ohne Leerzeichen, z.B. drache-bunt)", name: "id", widget: "string" }
+              - { label: "Produktname", name: "titel", widget: "string" }
+              - label: "Hauptfarbe"
+                name: "farbe"
+                widget: "select"
+                options: ["Orange", "Blau", "Bunt", "Pink", "Weiß", "Schwarz", "Grün", "Gelb", "Rot"]
+              - label: "Motto / Kategorie"
+                name: "motto"
+                widget: "select"
+                options: ["Weihnachten", "Deko", "Gaming", "Alltag", "Geschenk"]
+              - { label: "Produktfoto", name: "bild", widget: "image" }
+              - { label: "Kurzbeschreibung (Startseite, max. 5 Zeilen)", name: "kurzbeschreibung", widget: "text" }
+              - { label: "Ausführliche Beschreibung (Detailseite)", name: "beschreibung", widget: "text" }
+              - { label: "Maße (z.B. Höhe: 20 cm)", name: "masse", widget: "string", required: false }
+              - { label: "Material / Filament", name: "material", widget: "string", default: "PLA" }
+              - { label: "Shopify-Link", name: "shopify", widget: "string", default: "#" }
+              - { label: "Etsy-Link", name: "etsy", widget: "string", default: "#" }
