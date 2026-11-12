@@ -1,4 +1,22 @@
 {
+  "farben": [
+    "Orange",
+    "Blau",
+    "Bunt",
+    "Pink",
+    "Weiß",
+    "Schwarz",
+    "Grün",
+    "Gelb",
+    "Rot"
+  ],
+  "mottos": [
+    "Weihnachten",
+    "Deko",
+    "Gaming",
+    "Alltag",
+    "Geschenk"
+  ],
   "produkte": [
     {
       "id": "hirsch-orange",
