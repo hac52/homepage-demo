@@ -363,7 +363,7 @@
         async function loadProducts() {
             const grid = document.getElementById('productGrid');
             try {
-                const res = await fetch('./produkte.json?t=' + Date.now());
+                const res = await fetch('produkte.json?t=' + Date.now());
                 if (!res.ok) throw new Error('HTTP-Status ' + res.status);
                 const data = await res.json();
 
