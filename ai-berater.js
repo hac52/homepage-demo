@@ -1,5 +1,5 @@
 const LM_STUDIO_BASE_URL = "http://100.82.62.74:1234"; // Tailscale-URL anpassen
-const MODEL_NAME = "local-model";
+const MODEL_NAME = "gemma-4-e4b";
 
 let shopProducts = [];
 
