@@ -4,7 +4,7 @@ backend:
   branch: main
 
 media_folder: "modelle"
-public_folder: "./modelle"
+public_folder: "modelle"
 
 collections:
   - name: "shop"
