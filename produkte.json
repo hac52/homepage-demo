@@ -1,21 +1,11 @@
 {
-  "farben": [
-    "Orange",
-    "Blau",
-    "Bunt",
-    "Pink",
-    "Weiß",
-    "Schwarz",
-    "Grün",
-    "Gelb",
-    "Rot"
-  ],
-  "mottos": [
-    "Weihnachten",
-    "Deko",
-    "Gaming",
-    "Alltag",
-    "Geschenk"
+  "farben": ["Orange", "Blau", "Bunt", "Pink", "Weiß", "Schwarz", "Grün", "Gelb", "Rot"],
+  "mottos": ["Weihnachten", "Deko", "Gaming", "Alltag", "Geschenk"],
+  "zusatzfilter": [
+    {
+      "kategorie": "Material",
+      "werte": ["PLA", "PETG", "Flexibel"]
+    }
   ],
   "produkte": [
     {
@@ -23,6 +13,9 @@
       "titel": "Moderner Lamellen-Hirsch",
       "farbe": "Orange",
       "motto": "Weihnachten",
+      "eigenschaften": [
+        { "kategorie": "Material", "wert": "PLA" }
+      ],
       "bild": "modelle/hirsch-orange.jpg",
       "kurzbeschreibung": "Stylische Hirsch-Skulptur im modernen Lamellen-Design. Sorgt in warmem Orange für einen echten Blickfang auf dem Regal oder Sideboard. Umweltfreundlich aus hochwertigem PLA gefertigt.",
       "beschreibung": "Diese moderne Hirsch-Figur besticht durch ihre feine vertikale Lamellen-Struktur, die je nach Blickwinkel faszinierende Licht- und Schatteneffekte erzeugt.\n\nPerfekt als herbstliche oder winterliche Dekoration für Wohnzimmer, Flur oder Schreibtisch. Jedes Stück wird in Stuttgart Schicht für Schicht mit höchster Präzision aus biologisch abbaubarem PLA-Filament gedruckt.",
@@ -36,6 +29,9 @@
       "titel": "Winterwald-Tannenbaum",
       "farbe": "Blau",
       "motto": "Weihnachten",
+      "eigenschaften": [
+        { "kategorie": "Material", "wert": "PLA" }
+      ],
       "bild": "modelle/weihnachtsbaum-blau.jpg",
       "kurzbeschreibung": "Detailreicher Tannenbaum mit feiner Winterwald-Silhouette und Hirsch-Motiv im Inneren. Ideal für ein elektrisches LED-Teelicht (nur LED verwenden!).",
       "beschreibung": "Ein zauberhafter Blickfang für die Advents- und Winterzeit: Im Inneren dieses eisblauen Tannenbaums verbirgt sich eine filigrane Waldlandschaft mit Bäumen und einem stolzen Hirsch.\n\nSobald du ein elektrisches LED-Teelicht hineinstellst, leuchten die Sterne und Schneeflocken an der Außenhülle stimmungsvoll auf.\n\nWichtiger Sicherheitshinweis: Bitte ausschließlich mit elektrischen LED-Lichtern verwenden – kein echtes Feuer!",
