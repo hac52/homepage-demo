@@ -197,6 +197,49 @@
             border-top: 3px solid var(--accent);
             color: var(--text-muted);
         }
+
+        .footer-links { margin-top: 0.8rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .footer-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .footer-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-box {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(16px);
+            color: var(--text-color);
+            max-width: 720px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border-radius: 25px;
+            padding: 2rem;
+            border: 2px solid var(--secondary);
+            box-shadow: var(--shadow);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem; }
+        .modal-close { background: var(--primary); color: white; border: none; border-radius: 50%; width: 34px; height: 34px; font-weight: bold; cursor: pointer; }
+        .placeholder { background-color: #fef08a; color: #854d0e; padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+
+        @media (max-width: 768px) {
+            .detail-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
