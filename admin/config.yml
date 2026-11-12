@@ -43,14 +43,8 @@ collections:
             fields:
               - { label: "Produkt-ID (ohne Leerzeichen, z.B. drache-bunt)", name: "id", widget: "string" }
               - { label: "Produktname", name: "titel", widget: "string" }
-              - label: "Hauptfarbe"
-                name: "farbe"
-                widget: "combobox"
-                options: ["Orange", "Blau", "Bunt", "Pink", "Weiß", "Schwarz", "Grün", "Gelb", "Rot"]
-              - label: "Motto / Kategorie"
-                name: "motto"
-                widget: "combobox"
-                options: ["Weihnachten", "Deko", "Gaming", "Alltag", "Geschenk"]
+              - { label: "Hauptfarbe (z.B. Orange, Blau, Bunt)", name: "farbe", widget: "string" }
+              - { label: "Motto / Kategorie (z.B. Weihnachten, Deko)", name: "motto", widget: "string" }
               - name: "eigenschaften"
                 label: "🏷️ Zusätzliche Filter-Werte zuweisen"
                 widget: "list"
