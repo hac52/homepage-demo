@@ -1,10 +1,30 @@
 {
-  "farben": ["Orange", "Blau", "Bunt", "Pink", "Weiß", "Schwarz", "Grün", "Gelb", "Rot"],
-  "mottos": ["Weihnachten", "Deko", "Gaming", "Alltag", "Geschenk"],
+  "farben": [
+    "Orange",
+    "Blau",
+    "Bunt",
+    "Pink",
+    "Weiß",
+    "Schwarz",
+    "Grün",
+    "Gelb",
+    "Rot"
+  ],
+  "mottos": [
+    "Weihnachten",
+    "Deko",
+    "Gaming",
+    "Alltag",
+    "Geschenk"
+  ],
   "zusatzfilter": [
     {
       "kategorie": "Material",
-      "werte": ["PLA", "PETG", "Flexibel"]
+      "werte": [
+        "PLA",
+        "PETG",
+        "Flexibel"
+      ]
     }
   ],
   "produkte": [
@@ -14,7 +34,10 @@
       "farbe": "Orange",
       "motto": "Weihnachten",
       "eigenschaften": [
-        { "kategorie": "Material", "wert": "PLA" }
+        {
+          "kategorie": "Material",
+          "wert": "PLA"
+        }
       ],
       "bild": "modelle/hirsch-orange.jpg",
       "kurzbeschreibung": "Stylische Hirsch-Skulptur im modernen Lamellen-Design. Sorgt in warmem Orange für einen echten Blickfang auf dem Regal oder Sideboard. Umweltfreundlich aus hochwertigem PLA gefertigt.",
@@ -30,7 +53,10 @@
       "farbe": "Blau",
       "motto": "Weihnachten",
       "eigenschaften": [
-        { "kategorie": "Material", "wert": "PLA" }
+        {
+          "kategorie": "Material",
+          "wert": "PLA"
+        }
       ],
       "bild": "modelle/weihnachtsbaum-blau.jpg",
       "kurzbeschreibung": "Detailreicher Tannenbaum mit feiner Winterwald-Silhouette und Hirsch-Motiv im Inneren. Ideal für ein elektrisches LED-Teelicht (nur LED verwenden!).",
