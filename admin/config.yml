@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: DEIN-GITHUB-USER/DEIN-REPOSITORY
+  repo: hac52/homepage-demo
   branch: main
 
 media_folder: "modelle"
