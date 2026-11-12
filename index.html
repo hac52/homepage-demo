@@ -359,6 +359,11 @@
             if (item && typeof item === 'object' && item[key]) return item[key];
             return '';
         }
+        
+        function fixImagePath(path) {
+            if (!path) return '';
+            return path.startsWith('/') ? path.slice(1) : path;
+        }
 
         async function loadProducts() {
             const grid = document.getElementById('productGrid');
