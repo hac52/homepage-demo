@@ -77,7 +77,7 @@
         .logo img { height: 42px; width: auto; border-radius: 8px; }
         .header-actions { display: flex; gap: 10px; align-items: center; }
 
-        .theme-btn {
+        .theme-btn, .cart-button {
             background: var(--purple);
             color: white;
             border: none;
@@ -87,6 +87,8 @@
             font-weight: 700;
             cursor: pointer;
         }
+
+        .theme-btn:hover, .cart-button:hover, .btn:hover, .footer-btn:hover { transform: translateY(-1px); }
 
         .admin-link {
             text-decoration: none;
@@ -163,10 +165,11 @@
             flex-grow: 1;
         }
 
-        .shop-buttons { display: flex; gap: 0.8rem; margin-top: auto; }
-        .btn { flex: 1; text-align: center; text-decoration: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; font-size: 0.95rem; color: white; border: none; cursor: pointer; }
+        .shop-buttons { display: flex; gap: 0.8rem; margin-top: auto; flex-wrap: wrap; }
+        .btn { flex: 1 1 120px; text-align: center; text-decoration: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; font-size: 0.95rem; color: white; border: none; cursor: pointer; }
         .btn-shopify { background-color: #95bf47; }
         .btn-etsy { background-color: #f1641e; }
+        .btn-cart { background-color: var(--secondary); }
         .btn-back { background-color: var(--purple); display: inline-block; margin-bottom: 1.5rem; padding: 0.6rem 1.4rem; }
 
         .detail-view {
@@ -237,6 +240,75 @@
         .modal-close { background: var(--primary); color: white; border: none; border-radius: 50%; width: 34px; height: 34px; font-weight: bold; cursor: pointer; }
         .placeholder { background-color: #fef08a; color: #854d0e; padding: 1px 6px; border-radius: 4px; font-weight: 700; }
 
+        .cart-box {
+            max-width: 540px;
+        }
+        .cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            margin-top: 1rem;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 0.9rem;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            background: rgba(255,255,255,0.03);
+        }
+        .cart-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            flex: 1;
+        }
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        .qty-badge {
+            background: rgba(0, 119, 182, 0.12);
+            color: var(--secondary);
+            font-weight: 700;
+            padding: 0.3rem 0.6rem;
+            border-radius: 999px;
+        }
+        .remove-btn {
+            background: rgba(255, 71, 126, 0.12);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            padding: 0.35rem 0.7rem;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .cart-summary {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+        .checkout-btn {
+            display: block;
+            width: 100%;
+            margin-top: 1rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
         @media (max-width: 768px) {
             .detail-grid { grid-template-columns: 1fr; }
         }
@@ -253,6 +325,7 @@
             <span>Schicht für Schicht 3D Drucke</span>
         </div>
         <div class="header-actions">
+            <button id="cartButton" class="cart-button" type="button" onclick="openCartModal()">🛒 Warenkorb (0)</button>
             <a href="admin/" class="admin-link">🔒 Admin</a>
             <button class="theme-btn" id="themeToggle">🌙 Dark Mode</button>
         </div>
@@ -343,21 +416,38 @@
             <p><strong>1. Datenschutz auf einen Blick</strong><br>
             Diese Website dient als Online-Katalog für unsere 3D-Druck-Produkte. Der eigentliche Kaufabschluss findet erst nach Weiterleitung auf den externen Plattformen Shopify oder Etsy statt.</p><br>
             <p><strong>2. Verantwortliche Stelle</strong><br>
-            <span class="placeholder">[VORNAME NACHNAME]</span>, <span class="placeholder">[STRASSE UND HAUSNUMMER]</span>, <span class="placeholder">[PLZ]</span> Stuttgart, E-Mail: <span class="placeholder">[E-MAIL-ADRESSE]</span>.</p><br>
+            <span class="placeholder">[VORNAME NACHNAME]</span>, <span class="placeholder">[STRASSE UND HAUSNUMMER]</span>, <span class="placeholder">[PLZ]</span> Stuttgart, E-Mail: <span class="placeholder">[E-MAIL-ADRESSE]</span></p><br>
             <p><strong>3. Hosting (Netlify & GitHub)</strong><br>
-            Diese Website wird über Netlify (Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seiten erfasst der Hostinganbieter automatisch Server-Logfiles (z. B. IP-Adresse, Browsertyp, Uhrzeit), um einen sicheren Betrieb zu gewährleisten (Art. 6 Abs. 1 lit. f DSGVO).</p><br>
+            Diese Website wird über Netlify (Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seiten erfasst der Hostinganbieter automatisch Server-Logs wie IP-Adresse, Browserdaten und Zugriffszeitpunkte.</p><br>
             <p><strong>4. Lokale Speicherung (Dark/White Mode)</strong><br>
             Für die Speicherung Ihrer gewählten Farbansicht (Dark Mode / White Mode) nutzt diese Seite den lokalen Speicher Ihres Browsers (LocalStorage). Es werden keine Tracking-Cookies eingesetzt.</p><br>
             <p><strong>5. Externe Links zu Shopify und Etsy</strong><br>
-            Beim Klick auf einen Kauf-Button verlassen Sie unsere Website und werden zu unserem Shop auf Shopify (<span class="placeholder">[LINK ZU DEINEM SHOPIFY-SHOP]</span>) oder Etsy (<span class="placeholder">[LINK ZU DEINEM ETSY-SHOP]</span>) weitergeleitet. Ab diesem Zeitpunkt gelten die Datenschutzbestimmungen des jeweiligen Plattformbetreibers.</p><br>
+            Beim Klick auf einen Kauf-Button verlassen Sie unsere Website und werden zu unserem Shop auf Shopify (<span class="placeholder">[LINK ZU DEINEM SHOPIFY-SHOP]</span>) oder Etsy (<span class="placeholder">[LINK ZU DEINEM ETSY-SHOP]</span>) weitergeleitet. Dort gelten die Datenschutzbestimmungen dieser Plattformen.</p><br>
             <p><strong>6. Ihre Rechte</strong><br>
-            Sie haben jederzeit das Recht auf unentgeltliche Auskunft, Berichtigung, Sperrung oder Löschung Ihrer gespeicherten personenbezogenen Daten sowie ein Beschwerderecht bei der zuständigen Aufsichtsbehörde.</p>
+            Sie haben jederzeit das Recht auf unentgeltliche Auskunft, Berichtigung, Sperrung oder Löschung Ihrer gespeicherten personenbezogenen Daten sowie ein Beschwerderecht bei der zuständigen Datenschutzbehörde.</p>
+        </div>
+    </div>
+
+    <!-- WARENKORB MODAL -->
+    <div id="cartModal" class="modal-backdrop" onclick="closeModal('cartModal')">
+        <div class="modal-box cart-box" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>🛒 Warenkorb</h2>
+                <button class="modal-close" onclick="closeModal('cartModal')">✕</button>
+            </div>
+            <div id="cartItems" class="cart-list"></div>
+            <div class="cart-summary">
+                <span>Gesamt:</span>
+                <span id="cartTotal">0,00 €</span>
+            </div>
+            <button class="checkout-btn" type="button" onclick="alert('Die Kasse ist noch nicht aktiviert. Bitte nutze die externen Shop-Links für den Kauf.')">Zur Kasse</button>
         </div>
     </div>
 
 <script>
         let allProducts = [];
         let extraFilters = [];
+        let cart = JSON.parse(localStorage.getItem('sfs-cart') || '[]');
 
         const themeToggle = document.getElementById('themeToggle');
         const htmlEl = document.documentElement;
@@ -383,6 +473,81 @@
             return path.startsWith('/') ? path.slice(1) : path;
         }
 
+        function saveCart() {
+            localStorage.setItem('sfs-cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartButton = document.getElementById('cartButton');
+            const totalItems = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+            if (cartButton) {
+                cartButton.textContent = `🛒 Warenkorb (${totalItems})`;
+            }
+        }
+
+        function addToCart(productId) {
+            const product = allProducts.find(item => item.id === productId);
+            if (!product) return;
+
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.quantity = (Number(existing.quantity) || 0) + 1;
+            } else {
+                cart.push({ id: productId, quantity: 1 });
+            }
+
+            saveCart();
+            renderCart();
+            openCartModal();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCart();
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotalEl = document.getElementById('cartTotal');
+
+            if (!cartItems || !cartTotalEl) return;
+
+            if (!cart.length) {
+                cartItems.innerHTML = '<p>Dein Warenkorb ist leer.</p>';
+                cartTotalEl.textContent = '0,00 €';
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => {
+                const product = allProducts.find(p => p.id === item.id);
+                if (!product) return sum;
+                return sum + (Number(item.quantity) || 0) * (Number(product.preis) || 0);
+            }, 0);
+
+            cartItems.innerHTML = cart.map(item => {
+                const product = allProducts.find(p => p.id === item.id);
+                if (!product) return '';
+
+                return `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <strong>${product.titel || 'Produkt'}</strong>
+                            <span>${product.farbe ? 'Farbe: ' + product.farbe : ''}</span>
+                            <span>${(Number(product.preis) || 0).toFixed(2).replace('.', ',')} €</span>
+                        </div>
+                        <div class="cart-item-actions">
+                            <span class="qty-badge">x${Number(item.quantity) || 1}</span>
+                            <button class="remove-btn" type="button" data-remove-id="${product.id}">Entfernen</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            cartTotalEl.textContent = `${total.toFixed(2).replace('.', ',')} €`;
+        }
+
         async function loadProducts() {
             const grid = document.getElementById('productGrid');
             try {
@@ -406,6 +571,8 @@
 
                 populateFilters(savedColors, savedMottos);
                 renderProducts(allProducts);
+                renderCart();
+                updateCartUI();
 
                 const hash = window.location.hash.replace('#produkt-', '');
                 if (hash) {
@@ -477,6 +644,7 @@
                         <div class="shop-buttons" onclick="event.stopPropagation()">
                             <a href="${p.shopify || '#'}" target="_blank" class="btn btn-shopify">Auf Shopify kaufen</a>
                             <a href="${p.etsy || '#'}" target="_blank" class="btn btn-etsy">Auf Etsy kaufen</a>
+                            <button type="button" class="btn btn-cart" onclick="addToCart('${p.id}')">In den Warenkorb</button>
                         </div>
                     </div>
                 </article>
@@ -547,6 +715,7 @@
                     <div class="shop-buttons">
                         <a href="${p.shopify || '#'}" target="_blank" class="btn btn-shopify">Jetzt auf Shopify kaufen</a>
                         <a href="${p.etsy || '#'}" target="_blank" class="btn btn-etsy">Jetzt auf Etsy kaufen</a>
+                        <button type="button" class="btn btn-cart" onclick="addToCart('${p.id}')">In den Warenkorb</button>
                     </div>
                 </div>
             `;
@@ -562,7 +731,6 @@
         document.getElementById('colorFilter').addEventListener('change', filterProducts);
         document.getElementById('mottoFilter').addEventListener('change', filterProducts);
 
-                // Reagiert auf den Zurück- und Vorwärts-Pfeil im Browser
         window.addEventListener('popstate', () => {
             const hash = window.location.hash.replace('#produkt-', '');
             if (hash) {
@@ -572,11 +740,9 @@
                     return;
                 }
             }
-            // Kein Produkt-Hash mehr in der URL -> Übersicht wieder einblenden
             document.getElementById('detailSection').style.display = 'none';
             document.getElementById('overviewSection').style.display = 'block';
         });
-
 
         function openModal(id) {
             const modal = document.getElementById(id);
@@ -591,6 +757,17 @@
                 modal.style.display = 'none';
             }
         }
+
+        function openCartModal() {
+            openModal('cartModal');
+            renderCart();
+        }
+
+        document.getElementById('cartItems').addEventListener('click', (event) => {
+            const button = event.target.closest('[data-remove-id]');
+            if (!button) return;
+            removeFromCart(button.getAttribute('data-remove-id'));
+        });
 
         loadProducts();
     </script>
