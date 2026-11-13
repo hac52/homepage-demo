@@ -4,8 +4,231 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel – Schicht für Schicht 3D Drucke</title>
+  <style>
+    #ki-scanner-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 99999;
+      background: #111827;
+      color: #fff;
+      border: 1px solid #374151;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    }
+    #ki-scanner-panel {
+      position: fixed;
+      bottom: 72px;
+      left: 20px;
+      width: 360px;
+      max-width: calc(100vw - 40px);
+      background: #1f2937;
+      color: #f9fafb;
+      border: 1px solid #374151;
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 99999;
+      font-family: system-ui, sans-serif;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #ki-scanner-panel.open { display: flex; }
+    .ki-field-row { display: flex; gap: 6px; align-items: center; }
+    .ki-field-row input, .ki-field-row textarea {
+      flex: 1;
+      background: #111827;
+      color: #fff;
+      border: 1px solid #4b5563;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 13px;
+    }
+    .ki-copy-btn {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <script src="./sveltia-cms.js"></script>
+
+  <!-- Schwebender Button für den KI-Produkt-Scanner -->
+  <button id="ki-scanner-btn" type="button">✨ KI-Produkt-Scanner</button>
+
+  <!-- KI-Analyse-Fenster -->
+  <div id="ki-scanner-panel">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <strong>3D-Druck per Foto erkennen</strong>
+      <button id="ki-scanner-close" type="button" style="background:none;border:none;color:#9ca3af;font-size:16px;cursor:pointer;">✕</button>
+    </div>
+
+    <input type="file" id="ki-image-input" accept="image/*" style="font-size:13px;">
+    <img id="ki-preview" src="" alt="Vorschau" style="max-height:140px; object-fit:contain; display:none; border-radius:6px; background:#111827;">
+
+    <button id="ki-run-btn" type="button" style="background:#10b981; color:#fff; border:none; padding:8px; border-radius:6px; font-weight:600; cursor:pointer;">
+      Foto analysieren
+    </button>
+    <div id="ki-status" style="font-size:12px; color:#d1d5db;"></div>
+
+    <div class="ki-field-row">
+      <input type="text" id="ki-out-name" placeholder="Produktname">
+      <button type="button" class="ki-copy-btn" data-target="ki-out-name">Kopieren</button>
+    </div>
+    <div class="ki-field-row">
+      <input type="text" id="ki-out-cat" placeholder="Kategorie">
+      <button type="button" class="ki-copy-btn" data-target="ki-out-cat">Kopieren</button>
+    </div>
+    <div class="ki-field-row">
+      <input type="text" id="ki-out-price" placeholder="Preisvorschlag">
+      <button type="button" class="ki-copy-btn" data-target="ki-out-price">Kopieren</button>
+    </div>
+    <div class="ki-field-row">
+      <textarea id="ki-out-desc" rows="3" placeholder="Beschreibung"></textarea>
+      <button type="button" class="ki-copy-btn" data-target="ki-out-desc">Kopieren</button>
+    </div>
+
+    <button id="ki-autofill-btn" type="button" style="background:#4f46e5; color:#fff; border:none; padding:8px; border-radius:6px; font-size:13px; cursor:pointer;">
+      In offenes Sveltia-Formular übertragen
+    </button>
+  </div>
+
+  <script>
+    const LM_STUDIO_BASE_URL = "https://desktop-uvddnig.tail1dcff0.ts.net/v1";
+    const MODEL_NAME = "google/gemma-4-e4b";
+
+    const panel = document.getElementById("ki-scanner-panel");
+    const openBtn = document.getElementById("ki-scanner-btn");
+    const closeBtn = document.getElementById("ki-scanner-close");
+    const fileInput = document.getElementById("ki-image-input");
+    const preview = document.getElementById("ki-preview");
+    const runBtn = document.getElementById("ki-run-btn");
+    const statusEl = document.getElementById("ki-status");
+    const autofillBtn = document.getElementById("ki-autofill-btn");
+
+    let base64Image = "";
+
+    openBtn.addEventListener("click", () => panel.classList.toggle("open"));
+    closeBtn.addEventListener("click", () => panel.classList.remove("open"));
+
+    // Kopier-Buttons aktivieren
+    document.querySelectorAll(".ki-copy-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const el = document.getElementById(btn.dataset.target);
+        navigator.clipboard.writeText(el.value);
+        const orig = btn.textContent;
+        btn.textContent = "✓";
+        setTimeout(() => (btn.textContent = orig), 1200);
+      });
+    });
+
+    // Bild verkleinern & Base64 erzeugen
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const scale = Math.min(1, 800 / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+          base64Image = canvas.toDataURL("image/jpeg", 0.85);
+          preview.src = base64Image;
+          preview.style.display = "block";
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Analyse über LM Studio starten
+    runBtn.addEventListener("click", async () => {
+      if (!base64Image) {
+        statusEl.textContent = "Bitte zuerst ein Foto auswählen.";
+        return;
+      }
+      statusEl.textContent = "Gemma-4 analysiert das Foto...";
+      runBtn.disabled = true;
+
+      try {
+        const res = await fetch(`${LM_STUDIO_BASE_URL}/chat/completions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: MODEL_NAME,
+            messages: [
+              {
+                role: "system",
+                content: 'Du bist Produktmanager für einen 3D-Druck-Shop. Antworte NUR mit einem gültigen JSON-Objekt ohne Markdown: {"name":"...","kategorie":"...","preis":"...","beschreibung":"..."}'
+              },
+              {
+                role: "user",
+                content: [
+                  { type: "text", text: "Erstelle einen deutschen Produktnamen, eine Kategorie, einen Preisvorschlag in Euro (z. B. 12,90 €) und eine kurze Verkaufsbeschreibung (2 Sätze) für diesen 3D-Druck." },
+                  { type: "image_url", image_url: { url: base64Image } }
+                ]
+              }
+            ],
+            temperature: 0.3
+          })
+        });
+
+        const data = await res.json();
+        const raw = (data.choices?.[0]?.message?.content || "").replace(/```json|```/g, "").trim();
+        const parsed = JSON.parse(raw);
+
+        document.getElementById("ki-out-name").value = parsed.name || "";
+        document.getElementById("ki-out-cat").value = parsed.kategorie || "";
+        document.getElementById("ki-out-price").value = parsed.preis || "";
+        document.getElementById("ki-out-desc").value = parsed.beschreibung || "";
+        statusEl.textContent = "Fertig! Du kannst die Felder jetzt übertragen oder kopieren.";
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Fehler bei der Analyse (Ist ein Vision-Modell in LM Studio geladen?).";
+      } finally {
+        runBtn.disabled = false;
+      }
+    });
+
+    // Versucht geöffnete Sveltia-CMS-Felder direkt zu befüllen
+    autofillBtn.addEventListener("click", () => {
+      const mapping = [
+        { keywords: ["title", "name", "titel"], value: document.getElementById("ki-out-name").value },
+        { keywords: ["category", "kategorie"], value: document.getElementById("ki-out-cat").value },
+        { keywords: ["price", "preis"], value: document.getElementById("ki-out-price").value },
+        { keywords: ["description", "beschreibung", "text", "body"], value: document.getElementById("ki-out-desc").value }
+      ];
+
+      const inputs = document.querySelectorAll("input[type='text'], textarea");
+      inputs.forEach((field) => {
+        if (field.closest("#ki-scanner-panel")) return;
+        const labelText = (field.getAttribute("aria-label") || field.name || field.id || "").toLowerCase();
+        for (const item of mapping) {
+          if (item.value && item.keywords.some((k) => labelText.includes(k))) {
+            const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set ||
+                                 Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set;
+            if (nativeSetter) nativeSetter.call(field, item.value);
+            else field.value = item.value;
+            field.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+        }
+      });
+      statusEl.textContent = "Übertragung an Sveltia-Felder ausgeführt!";
+    });
+  </script>
 </body>
 </html>
