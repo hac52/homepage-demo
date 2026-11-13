@@ -56,6 +56,33 @@
       "material": "PETG",
       "shopify": "#",
       "etsy": "#"
+    },
+    {
+      "id": "Miniatur_Stadtlandschaft_01",
+      "titel": "Winterliches Miniatur-Diorama Stadtbild",
+      "farbe": "Weiß / Off-White",
+      "motto": "Deko, Weihnachten",
+      "eigenschaften": [
+        {
+          "kategorie": "Produktart",
+          "wert": "Diorama / Miniaturlandschaft"
+        },
+        {
+          "kategorie": "Thema",
+          "wert": "Stadtleben, Winter, Architektur"
+        },
+        {
+          "kategorie": "Komponenten",
+          "wert": "Gebäude (mehrere), Uhrturm, Bäume, Teichfläche"
+        }
+      ],
+      "bild": "modelle/miniatur-stadtlandschaft-01-1794592923413.jpg",
+      "kurzbeschreibung": "Ein detailliertes, dreidimensional gedrucktes Diorama, das eine idyllische und winterliche Kleinstadtlandschaft darstellt.",
+      "beschreibung": "Das Produkt ist ein auf einer flachen Basis montiertes Miniatur-Diorama. Es umfasst mehrere architektonisch gestaltete Gebäude in europäischem Stil, einen zentralen Uhrturm, sowie verschiedene Elemente wie Bäume und eine Teichfläche. Die gesamte Szenerie ist als zusammenhängendes Set konzipiert und eignet sich hervorragend zur Dekoration oder zum Modellbau.",
+      "masse": "",
+      "material": "3D-gedruckter Kunststoff/Harz",
+      "shopify": "#",
+      "etsy": "#"
     }
   ]
 }
