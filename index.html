@@ -355,7 +355,7 @@
         </div>
     </div>
 
-    <script>
+<script>
         let allProducts = [];
         let extraFilters = [];
 
@@ -386,15 +386,23 @@
         async function loadProducts() {
             const grid = document.getElementById('productGrid');
             try {
-                const res = await fetch('./produkte.json?t=' + Date.now());
-                if (!res.ok) throw new Error('HTTP-Status ' + res.status);
-                const data = await res.json();
+                // Lädt Produkte und Filter gleichzeitig aus den getrennten JSON-Dateien
+                const [prodRes, filterRes] = await Promise.all([
+                    fetch('./produkte.json?t=' + Date.now()),
+                    fetch('./filter.json?t=' + Date.now())
+                ]);
 
-                allProducts = Array.isArray(data.produkte) ? data.produkte : [];
-                extraFilters = Array.isArray(data.zusatzfilter) ? data.zusatzfilter : [];
+                if (!prodRes.ok) throw new Error('produkte.json HTTP-Status ' + prodRes.status);
+                if (!filterRes.ok) throw new Error('filter.json HTTP-Status ' + filterRes.status);
 
-                const savedColors = Array.isArray(data.farben) ? data.farben.map(c => extractText(c, 'farbe')) : [];
-                const savedMottos = Array.isArray(data.mottos) ? data.mottos.map(m => extractText(m, 'motto')) : [];
+                const prodData = await prodRes.json();
+                const filterData = await filterRes.json();
+
+                allProducts = Array.isArray(prodData.produkte) ? prodData.produkte : [];
+                extraFilters = Array.isArray(filterData.zusatzfilter) ? filterData.zusatzfilter : [];
+
+                const savedColors = Array.isArray(filterData.farben) ? filterData.farben.map(c => extractText(c, 'farbe')) : [];
+                const savedMottos = Array.isArray(filterData.mottos) ? filterData.mottos.map(m => extractText(m, 'motto')) : [];
 
                 populateFilters(savedColors, savedMottos);
                 renderProducts(allProducts);
@@ -406,9 +414,9 @@
                 }
             } catch (e) {
                 grid.innerHTML = `<div style="grid-column:1/-1; background:var(--card-bg); padding:2rem; border-radius:20px; border:2px solid var(--primary);">
-                    <h3>⚠️ Produkte konnten nicht geladen werden</h3>
+                    <h3>⚠️ Daten konnten nicht geladen werden</h3>
                     <p style="margin-top:0.5rem;"><strong>Technischer Grund:</strong> ${e.message}</p>
-                    <p style="margin-top:0.5rem; font-size:0.9rem;">Tipp: Prüfe unter <code>/produkte.json</code>, ob die Datei gültiges JSON enthält.</p>
+                    <p style="margin-top:0.5rem; font-size:0.9rem;">Tipp: Prüfe unter <code>/produkte.json</code> und <code>/filter.json</code>, ob beide Dateien gültiges JSON enthalten.</p>
                 </div>`;
             }
         }
@@ -445,6 +453,7 @@
                 filterSection.appendChild(select);
             });
         }
+
 
         function renderProducts(list) {
             const grid = document.getElementById('productGrid');
