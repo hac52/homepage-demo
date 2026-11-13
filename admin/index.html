@@ -69,10 +69,8 @@
 <body>
   <script src="./sveltia-cms.js"></script>
 
-  <!-- Schwebender Button für den KI-Produkt-Scanner -->
   <button id="ki-scanner-btn" type="button">✨ KI-Produkt-Scanner</button>
 
-  <!-- KI-Analyse-Fenster -->
   <div id="ki-scanner-panel">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <strong>3D-Druck per Foto erkennen</strong>
@@ -152,7 +150,6 @@
     openBtn.addEventListener("click", () => panel.classList.toggle("open"));
     closeBtn.addEventListener("click", () => panel.classList.remove("open"));
 
-    // Kopier-Buttons
     document.querySelectorAll(".ki-copy-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const el = document.getElementById(btn.dataset.target);
@@ -163,7 +160,6 @@
       });
     });
 
-    // Bild verkleinern für schnelle Übertragung
     fileInput.addEventListener("change", (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -185,7 +181,6 @@
       reader.readAsDataURL(file);
     });
 
-    // Foto mit Gemma-4 analysieren
     runBtn.addEventListener("click", async () => {
       if (!base64Image) {
         statusEl.textContent = "Bitte zuerst ein Produktfoto auswählen.";
@@ -242,17 +237,51 @@
       }
     });
 
-    // Hilfsfunktion um Inputs in Sveltia CMS sauber auszulösen
+    function getAllDeepInputs(root = document) {
+      let results = [];
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+      let node;
+      while ((node = walker.nextNode())) {
+        if ((node.tagName === "INPUT" || node.tagName === "TEXTAREA") && !node.closest("#ki-scanner-panel")) {
+          results.push(node);
+        }
+        if (node.shadowRoot) {
+          results = results.concat(getAllDeepInputs(node.shadowRoot));
+        }
+      }
+      return results;
+    }
+
+    function getFieldLabel(el) {
+      const root = el.getRootNode();
+      if (el.id && root.querySelector) {
+        const lbl = root.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+        if (lbl) return lbl.textContent.toLowerCase();
+      }
+      if (el.getAttribute("aria-labelledby") && root.getElementById) {
+        const lbl = root.getElementById(el.getAttribute("aria-labelledby"));
+        if (lbl) return lbl.textContent.toLowerCase();
+      }
+      let parent = el.parentElement;
+      for (let i = 0; i < 5 && parent; i++) {
+        const heading = parent.querySelector("label, [id*='label'], header, h3, h4");
+        if (heading && heading.textContent.trim().length > 2) {
+          return heading.textContent.toLowerCase();
+        }
+        parent = parent.parentElement;
+      }
+      return (el.getAttribute("aria-label") || el.name || "").toLowerCase();
+    }
+
     function setNativeValue(el, value) {
       const proto = el.tagName === "TEXTAREA" ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
       const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
       if (setter) setter.call(el, value);
       else el.value = value;
-      el.dispatchEvent(new Event("input", { bubbles: true }));
-      el.dispatchEvent(new Event("change", { bubbles: true }));
+      el.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
     }
 
-    // Exaktes Mapping auf die Sveltia-CMS-Labels deiner config.yml
     autofillBtn.addEventListener("click", () => {
       const mapping = [
         { labelMatch: "produkt-id", value: document.getElementById("ki-out-id").value },
@@ -264,32 +293,23 @@
         { labelMatch: "material / filament", value: document.getElementById("ki-out-material").value }
       ];
 
-      const allFields = Array.from(document.querySelectorAll("input[type='text'], textarea")).filter(
-        (el) => !el.closest("#ki-scanner-panel")
-      );
-
+      const allFields = getAllDeepInputs(document);
       let filledCount = 0;
 
-      allFields.forEach((field) => {
-        const containerText = (
-          field.getAttribute("aria-label") ||
-          field.closest("[role='group'], section, div")?.innerText ||
-          ""
-        ).toLowerCase();
-
-        for (const item of mapping) {
-          if (item.value && containerText.includes(item.labelMatch)) {
-            setNativeValue(field, item.value);
-            filledCount++;
-            break;
-          }
+      for (const item of mapping) {
+        if (!item.value) continue;
+        const matches = allFields.filter((f) => getFieldLabel(f).includes(item.labelMatch));
+        const target = matches[matches.length - 1];
+        if (target) {
+          setNativeValue(target, item.value);
+          filledCount++;
         }
-      });
+      }
 
       statusEl.textContent =
         filledCount > 0
           ? `${filledCount} Felder in Sveltia CMS ausgefüllt!`
-          : "Kein offenes Produktformular gefunden – nutze sonst die Kopieren-Buttons.";
+          : "Keine offenen Felder gefunden – bitte zuerst in Sveltia ein Produkt aufklappen.";
     });
   </script>
 </body>
