@@ -10,7 +10,7 @@
 (() => {
   "use strict";
 
-  const API_BASE = "https://user-q8u02hdrr5.tail84cb4a.ts.net/v1";
+  const API_BASE = "https://desktop-uvddnig.tail1dcff0.ts.net/v1";
   const MODEL = "google/gemma-4-e2b";
   const MAX_TEXT_CHARS = 2000;
   const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
