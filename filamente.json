@@ -1,31 +1,201 @@
 {
   "filamente": [
-    { "name": "Orange (Anycubic)", "material": "PETG", "farbcode": "#f97316", "verfuegbar": "Auf Lager (2x)", "notiz": "Hersteller: Anycubic" },
-    { "name": "Blau (Anycubic)", "material": "PETG", "farbcode": "#2563eb", "verfuegbar": "Auf Lager (3x)", "notiz": "Hersteller: Anycubic" },
-    { "name": "Rot (Anycubic)", "material": "PETG", "farbcode": "#dc2626", "verfuegbar": "Auf Lager (3x)", "notiz": "Hersteller: Anycubic" },
-    { "name": "Grün (Anycubic)", "material": "PETG", "farbcode": "#16a34a", "verfuegbar": "Auf Lager (3x)", "notiz": "Hersteller: Anycubic" },
-    { "name": "Grau (Anycubic)", "material": "PETG", "farbcode": "#6b7280", "verfuegbar": "Auf Lager (6x)", "notiz": "Hersteller: Anycubic" },
-    { "name": "Schwarz (Anycubic)", "material": "PETG", "farbcode": "#111827", "verfuegbar": "Auf Lager (6x)", "notiz": "Hersteller: Anycubic" },
-    { "name": "Weiß (Anycubic)", "material": "PETG", "farbcode": "#f9fafb", "verfuegbar": "Auf Lager (6x)", "notiz": "Hersteller: Anycubic" },
-    { "name": "Gelb (Bambu Lab)", "material": "PETG", "farbcode": "#eab308", "verfuegbar": "Auf Lager (3x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Grau/Blau (Bambu Lab)", "material": "PETG", "farbcode": "#64748b", "verfuegbar": "Auf Lager (2x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Rot (Bambu Lab)", "material": "PETG", "farbcode": "#dc2626", "verfuegbar": "Auf Lager (2x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Hautfarbe (Bambu Lab)", "material": "PETG", "farbcode": "#f5cba7", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Schwarz (Bambu Lab)", "material": "PETG", "farbcode": "#111827", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Weiß (Bambu Lab)", "material": "PETG", "farbcode": "#f9fafb", "verfuegbar": "Auf Lager (2x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Rot (Bambu Lab)", "material": "PLA", "farbcode": "#dc2626", "verfuegbar": "Auf Lager (3x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Braun (Bambu Lab)", "material": "PLA", "farbcode": "#78350f", "verfuegbar": "Auf Lager (2x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Türkis (Bambu Lab)", "material": "PLA", "farbcode": "#06b6d4", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Blau (Bambu Lab)", "material": "PLA", "farbcode": "#2563eb", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Grau/Blau (Bambu Lab)", "material": "PLA", "farbcode": "#64748b", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Bronze (Bambu Lab)", "material": "PLA", "farbcode": "#b45309", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Pink (Bambu Lab)", "material": "PLA", "farbcode": "#ec4899", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Lila (Bambu Lab)", "material": "PLA", "farbcode": "#9333ea", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Gold (Bambu Lab)", "material": "PLA", "farbcode": "#d97706", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Grün (Bambu Lab)", "material": "PLA", "farbcode": "#16a34a", "verfuegbar": "Auf Lager", "notiz": "Hersteller: Bambu Lab" },
-    { "name": "Blauglitzer (Fremdhersteller)", "material": "PLA", "farbcode": "#3b82f6", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Glitzer-Effekt, Fremdhersteller" },
-    { "name": "Graumetallic (Fremdhersteller)", "material": "PLA", "farbcode": "#71717a", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Metallic-Effekt, Fremdhersteller" },
-    { "name": "Gold (Fremdhersteller)", "material": "PLA", "farbcode": "#d97706", "verfuegbar": "Wenig Bestand (1x)", "notiz": "Fremdhersteller" },
-    { "name": "Orange (Fremdhersteller)", "material": "PLA", "farbcode": "#f97316", "verfuegbar": "Auf Lager", "notiz": "Fremdhersteller" }
+    {
+      "name": "Orange (Anycubic)",
+      "material": "PETG",
+      "farbcode": "#f97316",
+      "verfuegbar": "Auf Lager (2x)",
+      "notiz": "Hersteller: Anycubic"
+    },
+    {
+      "name": "Blau (Anycubic)",
+      "material": "PETG",
+      "farbcode": "#2563eb",
+      "verfuegbar": "Auf Lager (3x)",
+      "notiz": "Hersteller: Anycubic"
+    },
+    {
+      "name": "Rot (Anycubic)",
+      "material": "PETG",
+      "farbcode": "#dc2626",
+      "verfuegbar": "Auf Lager (3x)",
+      "notiz": "Hersteller: Anycubic"
+    },
+    {
+      "name": "Grün (Anycubic)",
+      "material": "PETG",
+      "farbcode": "#16a34a",
+      "verfuegbar": "Auf Lager (3x)",
+      "notiz": "Hersteller: Anycubic"
+    },
+    {
+      "name": "Grau (Anycubic)",
+      "material": "PETG",
+      "farbcode": "#6b7280",
+      "verfuegbar": "Auf Lager (6x)",
+      "notiz": "Hersteller: Anycubic"
+    },
+    {
+      "name": "Schwarz (Anycubic)",
+      "material": "PETG",
+      "farbcode": "#111827",
+      "verfuegbar": "Auf Lager (6x)",
+      "notiz": "Hersteller: Anycubic"
+    },
+    {
+      "name": "Weiß (Anycubic)",
+      "material": "PETG",
+      "farbcode": "#f9fafb",
+      "verfuegbar": "Auf Lager (6x)",
+      "notiz": "Hersteller: Anycubic"
+    },
+    {
+      "name": "Gelb (Bambu Lab)",
+      "material": "PETG",
+      "farbcode": "#eab308",
+      "verfuegbar": "Auf Lager (3x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Grau/Blau (Bambu Lab)",
+      "material": "PETG",
+      "farbcode": "#64748b",
+      "verfuegbar": "Auf Lager (2x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Rot (Bambu Lab)",
+      "material": "PETG",
+      "farbcode": "#dc2626",
+      "verfuegbar": "Auf Lager (2x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Hautfarbe (Bambu Lab)",
+      "material": "PETG",
+      "farbcode": "#f5cba7",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Schwarz (Bambu Lab)",
+      "material": "PETG",
+      "farbcode": "#111827",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Weiß (Bambu Lab)",
+      "material": "PETG",
+      "farbcode": "#f9fafb",
+      "verfuegbar": "Auf Lager (2x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Rot (Bambu Lab)",
+      "material": "PLA",
+      "farbcode": "#dc2626",
+      "verfuegbar": "Auf Lager (3x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Braun (Bambu Lab)",
+      "material": "PLA",
+      "farbcode": "#78350f",
+      "verfuegbar": "Auf Lager (2x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Türkis (Bambu Lab)",
+      "material": "PLA",
+      "farbcode": "#06b6d4",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Blau (Bambu Lab)",
+      "material": "PLA",
+      "farbcode": "#2563eb",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Grau/Blau (Bambu Lab)",
+      "material": "PLA",
+      "farbcode": "#64748b",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Bronze (Bambu Lab)",
+      "material": "PLA",
+      "farbcode": "#b45309",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Pink (Bambu Lab)",
+      "material": "PLA",
+      "farbcode": "#ec4899",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Lila (Bambu Lab)",
+      "material": "PLA",
+      "farbcode": "#9333ea",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Gold (Bambu Lab)",
+      "material": "PLA",
+      "farbcode": "#d97706",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Grün (Bambu Lab)",
+      "material": "PLA",
+      "farbcode": "#16a34a",
+      "verfuegbar": "Auf Lager",
+      "notiz": "Hersteller: Bambu Lab"
+    },
+    {
+      "name": "Blauglitzer (Fremdhersteller)",
+      "material": "PLA",
+      "farbcode": "#3b82f6",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Glitzer-Effekt, Fremdhersteller"
+    },
+    {
+      "name": "Graumetallic (Fremdhersteller)",
+      "material": "PLA",
+      "farbcode": "#71717a",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Metallic-Effekt, Fremdhersteller"
+    },
+    {
+      "name": "Gold (Fremdhersteller)",
+      "material": "PLA",
+      "farbcode": "#d97706",
+      "verfuegbar": "Wenig Bestand (1x)",
+      "notiz": "Fremdhersteller"
+    },
+    {
+      "name": "Orange (Fremdhersteller)",
+      "material": "PLA",
+      "farbcode": "#f97316",
+      "verfuegbar": "Auf Lager",
+      "notiz": "Fremdhersteller"
+    },
+    {
+      "name": "Blue (Bambu Lab)",
+      "material": "TPU",
+      "farbcode": "#007bff",
+      "verfuegbar": "Auf Lager (1x)",
+      "notiz": "Für AMS System",
+      "barcode": "6977252426183"
+    }
   ]
 }
