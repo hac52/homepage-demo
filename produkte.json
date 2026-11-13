@@ -56,20 +56,6 @@
       "material": "PETG",
       "shopify": "#",
       "etsy": "#"
-    },
-    {
-      "id": "test",
-      "titel": "test",
-      "farbe": "test",
-      "motto": "test",
-      "eigenschaften": [],
-      "bild": "/modelle/ki model.jpg",
-      "kurzbeschreibung": "test",
-      "beschreibung": "test",
-      "masse": "test",
-      "material": "PLA",
-      "shopify": "#",
-      "etsy": "#"
     }
   ]
 }
