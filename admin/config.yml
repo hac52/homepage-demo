@@ -60,3 +60,18 @@ collections:
               - { label: "Material / Filament (Text für Detailseite)", name: "material", widget: "string", default: "PLA" }
               - { label: "Shopify-Link", name: "shopify", widget: "string", default: "#" }
               - { label: "Etsy-Link", name: "etsy", widget: "string", default: "#" }
+
+          # ========================================================
+          # NEU: SEPARATES FELD FÜR DEIN FILAMENT-SORTIMENT
+          # ========================================================
+          - name: "filamente"
+            label: "🧵 Filament-Sortiment"
+            widget: "list"
+            allow_add: true
+            summary: "{{fields.name}} ({{fields.material}} • {{fields.verfuegbar}})"
+            fields:
+              - { label: "Filament-Name / Farbe (z.B. Matt Schwarz, Seide Gold)", name: "name", widget: "string" }
+              - { label: "Material-Typ (z.B. PLA, PETG, TPU, ASA)", name: "material", widget: "string", default: "PLA" }
+              - { label: "Farb-Code für Vorschau (optional, z.B. #111827)", name: "farbcode", widget: "color", required: false }
+              - { label: "Status (z.B. Auf Lager, Wenig Bestand, Leer)", name: "verfuegbar", widget: "string", default: "Auf Lager" }
+              - { label: "Notiz / Besonderheit (z.B. Glänzend, Wetterfest)", name: "notiz", widget: "string", required: false }
