@@ -1,4 +1,4 @@
-const LM_STUDIO_BASE_URL = "https://desktop-uvddnig.tail1dcff0.ts.net/v1"; // Tailscale-URL anpassen
+const LM_STUDIO_BASE_URL = "https://desktop-uvddnig.tail1dcff0.ts.net/v1";
 const MODEL_NAME = "google/gemma-4-e4b";
 
 let shopProducts = [];
@@ -34,6 +34,24 @@ function buildShopContext() {
   return shopProducts
     .map((p) => `- ${p.name}${p.price ? ` (${p.price})` : ""}: ${p.url}`)
     .join("\n");
+}
+
+// Lädt das Filament-Sortiment direkt aus deiner produkte.json
+async function getFilamentContext() {
+  try {
+    const res = await fetch("./produkte.json?t=" + Date.now());
+    const data = await res.json();
+    if (!data.filamente || data.filamente.length === 0) return "";
+
+    const liste = data.filamente
+      .filter((f) => f.verfuegbar !== "Leer")
+      .map((f) => `- ${f.name} (${f.material}${f.notiz ? ", " + f.notiz : ""})`)
+      .join("\n");
+
+    return `\n\nVerfügbares Filament-Sortiment für Wunschanfertigungen:\n${liste}`;
+  } catch {
+    return "";
+  }
 }
 
 // Verlinkt erkannte Produktnamen automatisch in der Bot-Antwort
@@ -99,11 +117,9 @@ async function sendMessage() {
   const loadingMsg = appendMessage("Denke nach...", "bot");
 
   const shopContext = buildShopContext();
+  const filamentContext = await getFilamentContext();
 
-  // Neue Nutzerfrage zum Verlauf hinzufügen
   chatHistory.push({ role: "user", content: userText });
-
-  // Verlauf auf die letzten 10 Nachrichten begrenzen (spart Speicher & Zeit)
   if (chatHistory.length > 10) {
     chatHistory = chatHistory.slice(-10);
   }
@@ -117,9 +133,9 @@ async function sendMessage() {
         messages: [
           {
             role: "system",
-            content: `Du bist ein hilfreicher KI-Produktberater für einen 3D-Druck-Shop. Nutze dieses Sortiment für Empfehlungen, nenne exakte Produktnamen und beziehe dich auf den bisherigen Gesprächsverlauf:\n${shopContext}`
+            content: `Du bist ein hilfreicher KI-Produktberater für einen 3D-Druck-Shop. Nutze dieses Sortiment und die verfügbaren Filamente für Empfehlungen, nenne exakte Produktnamen und beziehe dich auf den bisherigen Gesprächsverlauf:\n${shopContext}${filamentContext}`
           },
-          ...chatHistory // <-- Sendet den bisherigen Verlauf mit
+          ...chatHistory
         ],
         temperature: 0.5
       })
@@ -130,18 +146,14 @@ async function sendMessage() {
       data.choices?.[0]?.message?.content ||
       "Entschuldigung, ich konnte keine Antwort generieren.";
 
-    // Bot-Antwort ebenfalls im Verlauf speichern
     chatHistory.push({ role: "assistant", content: reply });
-
     loadingMsg.innerHTML = linkifyProducts(reply);
   } catch {
-    // Bei Verbindungsfehler die letzte unbeantwortete Frage wieder entfernen
     chatHistory.pop();
     loadingMsg.textContent =
       "Verbindung zu LM Studio fehlgeschlagen. Bitte Tailscale-Status prüfen.";
   }
 }
-
 
 document.addEventListener("DOMContentLoaded", () => {
   const fab = document.getElementById("ai-fab");
