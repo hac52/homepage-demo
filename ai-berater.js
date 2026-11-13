@@ -3,7 +3,7 @@
   "use strict";
 
   const API_BASE = "https://desktop-uvddnig.tail1dcff0.ts.net/v1";
-  const MODEL = "google/gemma-4-e4b";
+  const MODEL = "google/gemma-4-e2b";
   const MAX_INPUT_CHARS = 1200;
   const MAX_REPLY_CHARS = 4000;
   const REQUEST_TIMEOUT_MS = 60000;
