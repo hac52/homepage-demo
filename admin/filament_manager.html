@@ -149,8 +149,26 @@
       const dec=document.createElement("button"); dec.className="qty-btn"; dec.type="button"; dec.textContent="−"; dec.title="Bestand verringern"; dec.addEventListener("click",()=>adjustQuantity(i,-1));
       const inc=document.createElement("button"); inc.className="qty-btn"; inc.type="button"; inc.textContent="+"; inc.title="Bestand erhöhen"; inc.addEventListener("click",()=>adjustQuantity(i,1));
       const edit=document.createElement("button"); edit.className="small-btn"; edit.type="button"; edit.textContent="✏️"; edit.title="Mit Foto bearbeiten"; edit.addEventListener("click",()=>loadItemForEdit(i));
-      controls.append(dec,inc,edit); row.append(dot,info,controls); list.append(row);
+      const remove=document.createElement("button"); remove.className="small-btn"; remove.type="button"; remove.textContent="🗑️"; remove.title="Filament löschen"; remove.setAttribute("aria-label",`${f.name||"Unbenannt"} löschen`); remove.addEventListener("click",()=>deleteFilament(i));
+      controls.append(dec,inc,edit,remove); row.append(dot,info,controls); list.append(row);
     });
+  }
+  async function deleteFilament(index) {
+    const item=filamente[index];
+    if(!item) return;
+    const name=item.name||"Unbenannt";
+    if(!window.confirm(`Soll „${name}“ wirklich gelöscht werden?`)) return;
+    const oldItems=filamente.map(entry=>({...entry}));
+    filamente.splice(index,1);
+    const saved=await saveFilamenteToGitHub(`Filament gelöscht: ${name}`);
+    if(!saved) {
+      filamente=oldItems;
+      renderFilamentList();
+      return;
+    }
+    if(editingIndex===index) resetPhotoForm();
+    else if(editingIndex>index) editingIndex--;
+    setStatus(`„${name}“ wurde gelöscht.`,"ok");
   }
   function adjustQuantity(index,delta) {
     const item=filamente[index]; if(!item) return; const old=item.verfuegbar||"Auf Lager (1x)", match=old.match(/(\d+)\s*x/i);
