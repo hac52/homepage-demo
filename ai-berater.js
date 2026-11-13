@@ -128,7 +128,7 @@
 
     input.value = "";
     appendMessage(userText, "user");
-    const responseNode = appendMessage("Einen Moment…", "bot");
+    const responseNode = appendMessage("…", "bot");
     if (!responseNode) return;
 
     requestInFlight = true;
