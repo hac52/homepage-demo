@@ -5,44 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel – Schicht für Schicht 3D Drucke</title>
   <style>
-    .admin-floating-bar {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      z-index: 99999;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .manager-link {
-      background: #111827;
-      color: #fff;
-      border: 1px solid #374151;
-      padding: 12px 18px;
-      border-radius: 999px;
-      font-family: system-ui, sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform 0.15s ease, background 0.15s ease;
-    }
-    .manager-link:hover {
-      background: #1f2937;
-      transform: translateY(-1px);
-    }
+    .admin-floating-bar { position:fixed; bottom:20px; left:20px; z-index:99999; display:flex; gap:10px; flex-wrap:wrap; }
+    #ki-scanner-btn, .admin-link { background:#111827; color:#fff; border:1px solid #374151; padding:12px 18px; border-radius:999px; font-family:system-ui,sans-serif; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.3); text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:transform .15s ease,background .15s ease; }
+    #ki-scanner-btn:hover, .admin-link:hover { background:#1f2937; transform:translateY(-1px); }
+    #ki-scanner-panel { position:fixed; bottom:76px; left:20px; width:440px; max-width:calc(100vw - 40px); max-height:85vh; overflow-y:auto; background:#1f2937; color:#f9fafb; border:1px solid #374151; border-radius:12px; padding:16px; z-index:99999; font-family:system-ui,sans-serif; box-shadow:0 10px 25px rgba(0,0,0,.4); display:none; flex-direction:column; gap:8px; }
+    #ki-scanner-panel.open { display:flex; }
+    .ki-tabs { display:flex; gap:4px; background:#111827; padding:4px; border-radius:8px; flex-wrap:wrap; }
+    .ki-tab-btn { flex:1; background:transparent; color:#9ca3af; border:none; padding:7px 4px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; white-space:nowrap; }
+    .ki-tab-btn.active { background:#374151; color:#fff; }
+    .ki-section { display:none; flex-direction:column; gap:8px; }
+    .ki-section.active { display:flex; }
+    .ki-label { font-size:11px; color:#9ca3af; margin-bottom:-4px; }
+    .ki-field-row { display:flex; gap:6px; align-items:center; }
+    .ki-field-row input, .ki-field-row textarea, #ki-list-json, #ki-chat-input { flex:1; background:#111827; color:#fff; border:1px solid #4b5563; border-radius:6px; padding:6px 8px; font-size:13px; font-family:inherit; }
+    #ki-list-json { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; line-height:1.4; width:100%; box-sizing:border-box; }
+    .ki-copy-btn { background:#2563eb; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:12px; cursor:pointer; white-space:nowrap; }
+    #ki-chat-box { background:#111827; border:1px solid #374151; border-radius:8px; padding:10px; height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; font-size:13px; }
+    .ki-chat-msg { padding:8px 10px; border-radius:8px; max-width:85%; line-height:1.4; word-wrap:break-word; }
+    .ki-chat-msg.user { background:#2563eb; color:#fff; align-self:flex-end; }
+    .ki-chat-msg.bot { background:#374151; color:#f9fafb; align-self:flex-start; }
+    @media (max-width:480px) { .admin-floating-bar { left:12px; right:12px; bottom:12px; } #ki-scanner-panel { left:12px; bottom:70px; max-width:calc(100vw - 24px); } }
   </style>
 </head>
 <body>
   <script src="./sveltia-cms.js"></script>
 
-  <nav class="admin-floating-bar" aria-label="Management">
-    <a class="manager-link" href="./produkt_manager.html" title="Produkte mit Foto und KI verwalten">📦 Produkt Manager</a>
-    <a class="manager-link" href="./filament_manager.html" title="Filamentbestand mit Barcode und Foto verwalten">🧵 Filament Manager</a>
-  </nav>
+  <div class="admin-floating-bar">
+    <button id="ki-scanner-btn" type="button">✨ KI-Admin-Assistent</button>
+    <a class="admin-link" href="./produkt_manager.html" title="Produkt Manager öffnen">📦 Produkt Manager</a>
+    <a class="admin-link" href="./filament_manager.html" title="Filament Manager öffnen">🧵 Filament Manager</a>
+  </div>
+
+  <div id="ki-scanner-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <strong>✨ KI-Admin-Assistent</strong>
+      <button id="ki-scanner-close" type="button" style="background:none;border:none;color:#9ca3af;font-size:16px;cursor:pointer;">✕</button>
+    </div>
+    <div class="ki-tabs">
+      <button type="button" class="ki-tab-btn active" data-tab="tab-chat">💬 Assistent</button>
+      <button type="button" class="ki-tab-btn" data-tab="tab-liste">📋 Liste</button>
+    </div>
+    <div id="tab-chat" class="ki-section active">
+      <div id="ki-chat-box"><div class="ki-chat-msg bot">Hallo! Frag mich alles zu deinem aktuellen Produkt-Sortiment, deinen Filtern oder deinem Filament-Bestand.</div></div>
+      <div class="ki-field-row">
+        <input type="text" id="ki-chat-input" placeholder="Frage zum Bestand oder Sortiment...">
+        <button type="button" id="ki-chat-send" style="background:#10b981;color:#fff;border:none;border-radius:6px;padding:7px 12px;font-weight:600;cursor:pointer;">Fragen</button>
+      </div>
+      <button type="button" id="ki-chat-clear" style="background:none;border:none;color:#9ca3af;font-size:11px;text-align:right;cursor:pointer;padding:0;">Verlauf löschen</button>
+    </div>
+    <div id="ki-scanner-inputs" style="display:none;flex-direction:column;gap:8px;">
+      <span class="ki-label">Foto hochladen (Produkt, Spule oder handgeschriebener Zettel)</span>
+      <input type="file" id="ki-image-input" accept="image/*" style="font-size:13px;">
+      <img id="ki-preview" src="" alt="Vorschau" style="max-height:110px;object-fit:contain;display:none;border-radius:6px;background:#111827;">
+      <span class="ki-label">Zusatz-Info / Texteingabe (optional)</span>
+      <textarea id="ki-text-prompt" rows="2" placeholder="Optional: Zusatzinformationen oder Korrekturhinweise..."></textarea>
+      <button id="ki-run-btn" type="button" style="background:#10b981;color:#fff;border:none;padding:9px;border-radius:6px;font-weight:600;cursor:pointer;">Mit KI analysieren</button>
+      <div id="ki-status" style="font-size:12px;color:#d1d5db;"></div>
+    </div>
+    <div id="tab-liste" class="ki-section">
+      <span class="ki-label">Erkannte filamente.json (alle Einträge vom Zettel)</span>
+      <textarea id="ki-list-json" rows="10" placeholder="Hier erscheint die fertige filamente.json nach der Analyse..."></textarea>
+      <div style="display:flex;gap:6px;">
+        <button type="button" class="ki-copy-btn" data-target="ki-list-json" style="flex:1;padding:9px;font-weight:600;">JSON kopieren</button>
+        <button type="button" id="ki-download-json-btn" style="flex:1;background:#059669;color:#fff;border:none;border-radius:6px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;">filamente.json speichern</button>
+      </div>
+    </div>
+  </div>
+  <script src="./admin-assistent.js" defer></script>
 </body>
 </html>
