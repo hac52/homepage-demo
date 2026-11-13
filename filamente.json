@@ -189,14 +189,6 @@
       "farbcode": "#f97316",
       "verfuegbar": "Auf Lager",
       "notiz": "Fremdhersteller"
-    },
-    {
-      "name": "ANYCUBIC PETG / Grün",
-      "material": "PETG",
-      "farbcode": "#008000",
-      "verfuegbar": "Auf Lager (1x)",
-      "notiz": "Hersteller: ANYCUBIC. Produkt: PETG Filament. Spezifikationen: 1.75mm Durchmesser, 1 kg Gewicht. Der Farbcode ist eine Schätzung, da kein Hex-Code auf dem Etikett angegeben ist.",
-      "barcode": "6974662352811"
     }
   ]
 }
