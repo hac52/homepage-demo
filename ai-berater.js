@@ -2,6 +2,7 @@ const LM_STUDIO_BASE_URL = "https://desktop-uvddnig.tail1dcff0.ts.net/v1"; // Ta
 const MODEL_NAME = "google/gemma-4-e4b";
 
 let shopProducts = [];
+let chatHistory = [];
 
 // Liest Produkte aus dem DOM der Shop-Seite aus
 function buildShopContext() {
@@ -99,6 +100,14 @@ async function sendMessage() {
 
   const shopContext = buildShopContext();
 
+  // Neue Nutzerfrage zum Verlauf hinzufügen
+  chatHistory.push({ role: "user", content: userText });
+
+  // Verlauf auf die letzten 10 Nachrichten begrenzen (spart Speicher & Zeit)
+  if (chatHistory.length > 10) {
+    chatHistory = chatHistory.slice(-10);
+  }
+
   try {
     const response = await fetch(`${LM_STUDIO_BASE_URL}/chat/completions`, {
       method: "POST",
@@ -108,9 +117,9 @@ async function sendMessage() {
         messages: [
           {
             role: "system",
-            content: `Du bist ein hilfreicher KI-Produktberater. Nutze dieses Sortiment für Empfehlungen und nenne exakte Produktnamen:\n${shopContext}`
+            content: `Du bist ein hilfreicher KI-Produktberater für einen 3D-Druck-Shop. Nutze dieses Sortiment für Empfehlungen, nenne exakte Produktnamen und beziehe dich auf den bisherigen Gesprächsverlauf:\n${shopContext}`
           },
-          { role: "user", content: userText }
+          ...chatHistory // <-- Sendet den bisherigen Verlauf mit
         ],
         temperature: 0.5
       })
@@ -120,12 +129,19 @@ async function sendMessage() {
     const reply =
       data.choices?.[0]?.message?.content ||
       "Entschuldigung, ich konnte keine Antwort generieren.";
+
+    // Bot-Antwort ebenfalls im Verlauf speichern
+    chatHistory.push({ role: "assistant", content: reply });
+
     loadingMsg.innerHTML = linkifyProducts(reply);
   } catch {
+    // Bei Verbindungsfehler die letzte unbeantwortete Frage wieder entfernen
+    chatHistory.pop();
     loadingMsg.textContent =
       "Verbindung zu LM Studio fehlgeschlagen. Bitte Tailscale-Status prüfen.";
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const fab = document.getElementById("ai-fab");
