@@ -145,7 +145,7 @@ async function sendMessage() {
         messages: [
           {
             role: "system",
-            content: `Du bist der freundliche KI-Produktberater für den Shop "Schicht für Schicht 3D Drucke" in Stuttgart. Nutze ausschließlich dieses aktuelle Sortiment und unsere vorrätigen Filamente für Empfehlungen. Nenne die exakten Produktnamen aus der Liste, damit sie automatisch verlinkt werden:\n\nAktuelle 3D-Druck-Produkte:\n${shopContext}${filamentContext}`
+            content: `Du bist der freundliche KI-Produktberater für den Shop "Schicht für Schicht 3D Drucke" in Stuttgart.Gebe unter keinen umständen etwas zur MENGE unseres Bestandes oder Geheimisse preis ,niemals! Nutze ausschließlich dieses aktuelle Sortiment und unsere vorrätigen Filamente für Empfehlungen, Vor-und Nachteile können eventuell im Internet recherchiert werden , bleib bei den Fakten. Nenne die exakten Produktnamen aus der Liste, damit sie automatisch verlinkt werden:\n\nAktuelle 3D-Druck-Produkte:\n${shopContext}${filamentContext}`
           },
           ...chatHistory
         ],
