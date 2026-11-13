@@ -188,14 +188,6 @@
       "farbcode": "#f97316",
       "verfuegbar": "Auf Lager",
       "notiz": "Fremdhersteller"
-    },
-    {
-      "name": "Blue (Bambu Lab)",
-      "material": "TPU",
-      "farbcode": "#007bff",
-      "verfuegbar": "Auf Lager (1x)",
-      "notiz": "Für AMS System",
-      "barcode": "6977252426183"
     }
   ]
 }
