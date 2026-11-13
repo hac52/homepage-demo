@@ -11,7 +11,7 @@
   "use strict";
 
   const API_BASE = "https://desktop-uvddnig.tail1dcff0.ts.net/v1";
-  const MODEL = "google/gemma-4-e4b";
+  const MODEL = "google/gemma-4-e2b";
   const MAX_TEXT_CHARS = 2000;
   const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
   const REQUEST_TIMEOUT_MS = 90000;
