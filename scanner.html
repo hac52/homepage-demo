@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Filament Scanner – Schicht für Schicht 3D</title>
+  <link rel="manifest" id="pwa-manifest" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+    header {
+      background: #111827;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .icon-btn {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .container { max-width: 540px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card h2 { font-size: 15px; font-weight: 600; color: var(--text); }
+    #video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+    }
+    #video-wrapper.active { display: block; }
+    video { width: 100%; height: 100%; object-fit: cover; }
+    .scan-overlay {
+      position: absolute;
+      inset: 20%;
+      border: 2px solid var(--success);
+      border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
+      pointer-events: none;
+    }
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #fff;
+      transition: opacity 0.15s;
+    }
+    .btn:active { opacity: 0.8; }
+    .btn-primary { background: var(--primary); }
+    .btn-success { background: var(--success); }
+    .btn-danger { background: var(--danger); }
+    .btn-secondary { background: #334155; }
+    .row { display: flex; gap: 8px; }
+    .row > * { flex: 1; }
+    input, select {
+      width: 100%;
+      background: #0f172a;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+    .status-banner {
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .status-banner.ok { border-color: var(--success); color: #6ee7b7; }
+    .status-banner.err { border-color: var(--danger); color: #fca5a5; }
+    .filament-item {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .color-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      flex-shrink: 0;
+    }
+    .fil-info { flex: 1; min-width: 0; }
+    .fil-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fil-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .qty-controls { display: flex; align-items: center; gap: 6px; }
+    .qty-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📷 Filament-Scanner</h1>
+  <div style="display:flex; gap:8px;">
+    <button class="icon-btn" id="btn-sync" title="Mit GitHub synchronisieren">🔄 Sync</button>
+    <button class="icon-btn" id="btn-settings" title="Einstellungen">⚙️</button>
+  </div>
+</header>
+
+<div class="container">
+  <div id="global-status" class="status-banner">Bereit. Tippe auf „Kamera starten“, um einen Barcode zu scannen.</div>
+
+  <!-- EINSTELLUNGEN (GitHub Token) -->
+  <div id="settings-card" class="card hidden">
+    <h2>⚙️ GitHub & KI-Verbindung</h2>
+    <div>
+      <label>GitHub Repository (Besitzer/Repo)</label>
+      <input type="text" id="cfg-repo" value="hac52/homepage-demo" />
+    </div>
+    <div>
+      <label>Branch</label>
+      <input type="text" id="cfg-branch" value="main" />
+    </div>
+    <div>
+      <label>GitHub Personal Access Token (für Schreibzugriff auf filamente.json)</label>
+      <input type="password" id="cfg-token" placeholder="github_pat_... oder ghp_..." />
+    </div>
+    <div>
+      <label>LM Studio Tailscale-URL (für KI-Etikettenerkennung)</label>
+      <input type="text" id="cfg-ai-url" value="https://desktop-uvddnig.tail1dcff0.ts.net/v1" />
+    </div>
+    <button class="btn btn-primary" id="btn-save-settings">Einstellungen speichern</button>
+  </div>
+
+  <!-- BARCODE SCANNER -->
+  <div class="card">
+    <h2>1. Barcode oder QR-Code scannen</h2>
+    <div id="video-wrapper">
+      <video id="scanner-video" playsinline muted></video>
+      <div class="scan-overlay"></div>
+    </div>
+    <div class="row">
+      <button class="btn btn-primary" id="btn-start-scan">📷 Kamera starten</button>
+      <button class="btn btn-danger hidden" id="btn-stop-scan">⏹️ Stopp</button>
+    </div>
+    <div class="row">
+      <input type="text" id="manual-barcode" placeholder="Oder Barcode-Nummer manuell eingeben..." />
+      <button class="btn btn-secondary" id="btn-lookup-barcode" style="flex:0 0 auto;">Suchen</button>
+    </div>
+  </div>
+
+  <!-- ERKANNTER / NEUER EINTRAG -->
+  <div id="scan-result-card" class="card hidden">
+    <h2 id="scan-result-title">Gefundenes Filament</h2>
+    <div style="font-size:12px; color:var(--muted);">Barcode: <strong id="active-barcode-label">-</strong></div>
+
+    <div id="existing-match-box" class="hidden" style="display:flex; flex-direction:column; gap:10px;">
+      <div class="filament-item">
+        <span class="color-dot" id="match-dot"></span>
+        <div class="fil-info">
+          <div class="fil-title" id="match-name">-</div>
+          <div class="fil-meta" id="match-meta">-</div>
+        </div>
+        <div class="qty-controls">
+          <button class="qty-btn" id="btn-dec-match">−</button>
+          <button class="qty-btn" id="btn-inc-match">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="unassigned-barcode-box" class="hidden" style="display:flex; flex-direction:column; gap:10px;">
+      <p style="font-size:13px; color:#fbbf24;">Dieser Barcode ist noch keinem Filament zugeordnet.</p>
+      
+      <div>
+        <label>Mit bestehendem Filament verknüpfen:</label>
+        <div class="row">
+          <select id="link-existing-select"></select>
+          <button class="btn btn-primary" id="btn-link-existing" style="flex:0 0 auto;">Verknüpfen</button>
+        </div>
+      </div>
+
+      <hr style="border:none; border-top:1px solid var(--border); margin:4px 0;" />
+
+      <div>
+        <label>Oder neu anlegen (optional per Spulen-Foto mit KI):</label>
+        <input type="file" id="ai-spool-photo" accept="image/*" capture="environment" style="margin-bottom:8px;" />
+        <button class="btn btn-secondary" id="btn-ai-detect" style="width:100%; margin-bottom:8px;">✨ Etikett per KI auslesen</button>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Name & Hersteller</label>
+          <input type="text" id="new-fil-name" placeholder="z.B. Orange (Anycubic)" />
+        </div>
+        <div style="flex:0 0 100px;">
+          <label>Material</label>
+          <input type="text" id="new-fil-mat" value="PLA" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Anzahl Rollen</label>
+          <input type="number" id="new-fil-qty" value="1" min="0" />
+        </div>
+        <div style="flex:0 0 90px;">
+          <label>Farbe</label>
+          <input type="color" id="new-fil-color" value="#3b82f6" style="height:40px; padding:2px;" />
+        </div>
+      </div>
+      <button class="btn btn-success" id="btn-create-new">Neues Filament speichern</button>
+    </div>
+  </div>
+
+  <!-- AKTUELLES SORTIMENT -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2>🧵 Aktuelles Filament-Lager</h2>
+      <span id="fil-count-badge" style="font-size:12px; color:var(--muted);">0 Einträge</span>
+    </div>
+    <input type="text" id="search-list" placeholder="Sortiment durchsuchen..." />
+    <div id="filament-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+  </div>
+</div>
+
+<script>
+  // Inline Web-Manifest für PWA-Installation auf Android
+  const manifest = {
+    name: "Schicht für Schicht – Filament Scanner",
+    short_name: "Filament Scan",
+    start_url: "./scanner.html",
+    display: "standalone",
+    background_color: "#0f172a",
+    theme_color: "#111827",
+    icons: [{
+      src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23111827'/><text y='.9em' font-size='75' x='12'>🧵</text></svg>",
+      sizes: "192x192",
+      type: "image/svg+xml"
+    }]
+  };
+  document.getElementById("pwa-manifest").setAttribute(
+    "href",
+    "data:application/manifest+json," + encodeURIComponent(JSON.stringify(manifest))
+  );
+
+  // State & Konfiguration
+  let filamente = [];
+  let fileSha = null;
+  let currentBarcode = "";
+  let matchedIndex = -1;
+  let videoStream = null;
+  let scanInterval = null;
+
+  const cfg = {
+    get repo() { return localStorage.getItem("sfs_repo") || "hac52/homepage-demo"; },
+    get branch() { return localStorage.getItem("sfs_branch") || "main"; },
+    get token() { return localStorage.getItem("sfs_token") || ""; },
+    get aiUrl() { return localStorage.getItem("sfs_ai_url") || "https://desktop-uvddnig.tail1dcff0.ts.net/v1"; }
+  };
+
+  function setStatus(msg, type = "") {
+    const el = document.getElementById("global-status");
+    el.textContent = msg;
+    el.className = "status-banner " + type;
+  }
+
+  // Einstellungen UI
+  document.getElementById("cfg-repo").value = cfg.repo;
+  document.getElementById("cfg-branch").value = cfg.branch;
+  document.getElementById("cfg-token").value = cfg.token;
+  document.getElementById("cfg-ai-url").value = cfg.aiUrl;
+
+  document.getElementById("btn-settings").addEventListener("click", () => {
+    document.getElementById("settings-card").classList.toggle("hidden");
+  });
+
+  document.getElementById("btn-save-settings").addEventListener("click", () => {
+    localStorage.setItem("sfs_repo", document.getElementById("cfg-repo").value.trim());
+    localStorage.setItem("sfs_branch", document.getElementById("cfg-branch").value.trim());
+    localStorage.setItem("sfs_token", document.getElementById("cfg-token").value.trim());
+    localStorage.setItem("sfs_ai_url", document.getElementById("cfg-ai-url").value.trim());
+    document.getElementById("settings-card").classList.add("hidden");
+    setStatus("Einstellungen gespeichert. Lade Bestand...", "ok");
+    loadFilamente();
+  });
+
+  // Hilfsfunktionen für Stückzahl & Status
+  function parseQuantity(statusStr) {
+    if (!statusStr) return 1;
+    const match = statusStr.match(/(\d+)\s*x/i);
+    if (match) return parseInt(match[1], 10);
+    if (statusStr.toLowerCase().includes("leer")) return 0;
+    return 1;
+  }
+
+  function formatStatus(qty) {
+    if (qty <= 0) return "Leer";
+    if (qty === 1) return "Wenig Bestand (1x)";
+    return `Auf Lager (${qty}x)`;
+  }
+
+  // Daten von GitHub laden
+  async function loadFilamente() {
+    try {
+      setStatus("Lade filamente.json von GitHub...");
+      if (cfg.token) {
+        const res = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/filamente.json?ref=${cfg.branch}`, {
+          headers: { Authorization: `Bearer ${cfg.token}`, Accept: "application/vnd.github+json" }
+        });
+        if (!res.ok) throw new Error("GitHub API Fehler: " + res.status);
+        const json = await res.json();
+        fileSha = json.sha;
+        const decoded = decodeURIComponent(escape(atob(json.content.replace(/
+/g, ""))));
+        const parsed = JSON.parse(decoded);
+        filamente = Array.isArray(parsed.filamente) ? parsed.filamente : [];
+      } else {
+        const res = await fetch("./filamente.json?t=" + Date.now());
+        if (!res.ok) throw new Error("Konnte filamente.json nicht laden (" + res.status + ")");
+        const parsed = await res.json();
+        filamente = Array.isArray(parsed.filamente) ? parsed.filamente : [];
+      }
+      renderList();
+      setStatus(`${filamente.length} Filamente geladen.${cfg.token ? " (Schreibzugriff aktiv)" : " (Nur Lesen – Token in ⚙️ eintragen)"}`, "ok");
+    } catch (err) {
+      setStatus("Fehler beim Laden: " + err.message, "err");
+    }
+  }
+
+  // Daten auf GitHub speichern
+  async function saveFilamenteToGitHub(commitMsg) {
+    if (!cfg.token) {
+      setStatus("Bitte zuerst deinen GitHub Token in den Einstellungen (⚙️) eintragen!", "err");
+      document.getElementById("settings-card").classList.remove("hidden");
+      return false;
+    }
+    try {
+      setStatus("Speichere Änderung auf GitHub...");
+      const contentStr = JSON.stringify({ filamente }, null, 2);
+      const base64Content = btoa(unescape(encodeURIComponent(contentStr)));
+
+      const res = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/filamente.json`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${cfg.token}`,
+          Accept: "application/vnd.github+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: commitMsg || "Bestand per Barcode-Scanner aktualisiert",
+          content: base64Content,
+          sha: fileSha,
+          branch: cfg.branch
+        })
+      });
+
+      if (!res.ok) throw new Error("Speichern fehlgeschlagen (" + res.status + ")");
+      const result = await res.json();
+      fileSha = result.content.sha;
+      renderList();
+      setStatus("Gespeichert & mit Shop synchronisiert!", "ok");
+      return true;
+    } catch (err) {
+      setStatus("Speicherfehler: " + err.message, "err");
+      return false;
+    }
+  }
+
+  // Sortiment rendern
+  function renderList() {
+    const query = document.getElementById("search-list").value.toLowerCase();
+    const listEl = document.getElementById("filament-list");
+    const selectEl = document.getElementById("link-existing-select");
+    listEl.innerHTML = "";
+    selectEl.innerHTML = "";
+
+    document.getElementById("fil-count-badge").textContent = `${filamente.length} Einträge`;
+
+    filamente.forEach((f, idx) => {
+      const opt = document.createElement("option");
+      opt.value = idx;
+      opt.textContent = `${f.name} (${f.material})`;
+      selectEl.appendChild(opt);
+
+      if (query && !`${f.name} ${f.material} ${f.verfuegbar} ${f.barcode || ""}`.toLowerCase().includes(query)) {
+        return;
+      }
+
+      const item = document.createElement("div");
+      item.className = "filament-item";
+      item.innerHTML = `
+        <span class="color-dot" style="background:${f.farbcode || "#64748b"}"></span>
+        <div class="fil-info">
+          <div class="fil-title">${f.name}</div>
+          <div class="fil-meta">${f.material} • <strong>${f.verfuegbar}</strong>${f.barcode ? " • 🏷️ " + f.barcode : ""}</div>
+        </div>
+        <div class="qty-controls">
+          <button class="qty-btn" data-action="dec" data-idx="${idx}">−</button>
+          <button class="qty-btn" data-action="inc" data-idx="${idx}">+</button>
+        </div>
+      `;
+      listEl.appendChild(item);
+    });
+
+    if (matchedIndex >= 0 && filamente[matchedIndex]) {
+      const m = filamente[matchedIndex];
+      document.getElementById("match-dot").style.background = m.farbcode || "#64748b";
+      document.getElementById("match-name").textContent = m.name;
+      document.getElementById("match-meta").textContent = `${m.material} • ${m.verfuegbar}`;
+    }
+  }
+
+  document.getElementById("search-list").addEventListener("input", renderList);
+
+  async function changeQuantity(idx, delta) {
+    const item = filamente[idx];
+    if (!item) return;
+    const currentQty = parseQuantity(item.verfuegbar);
+    const nextQty = Math.max(0, currentQty + delta);
+    item.verfuegbar = formatStatus(nextQty);
+    renderList();
+    await saveFilamenteToGitHub(`${item.name}: ${item.verfuegbar}`);
+  }
+
+  document.getElementById("filament-list").addEventListener("click", (e) => {
+    const btn = e.target.closest(".qty-btn");
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.idx, 10);
+    changeQuantity(idx, btn.dataset.action === "inc" ? 1 : -1);
+  });
+
+  document.getElementById("btn-inc-match").addEventListener("click", () => {
+    if (matchedIndex >= 0) changeQuantity(matchedIndex, 1);
+  });
+  document.getElementById("btn-dec-match").addEventListener("click", () => {
+    if (matchedIndex >= 0) changeQuantity(matchedIndex, -1);
+  });
+
+  // Barcode verarbeiten
+  function handleBarcodeDetected(code) {
+    currentBarcode = code.trim();
+    if (!currentBarcode) return;
+
+    if (navigator.vibrate) navigator.vibrate(100);
+    document.getElementById("manual-barcode").value = currentBarcode;
+    document.getElementById("active-barcode-label").textContent = currentBarcode;
+    document.getElementById("scan-result-card").classList.remove("hidden");
+
+    matchedIndex = filamente.findIndex((f) => f.barcode === currentBarcode);
+
+    if (matchedIndex >= 0) {
+      document.getElementById("scan-result-title").textContent = "✅ Filament erkannt";
+      document.getElementById("existing-match-box").classList.remove("hidden");
+      document.getElementById("unassigned-barcode-box").classList.add("hidden");
+      renderList();
+      setStatus(`Barcode ${currentBarcode} erkannt: ${filamente[matchedIndex].name}`, "ok");
+    } else {
+      document.getElementById("scan-result-title").textContent = "🆕 Unbekannter Barcode";
+      document.getElementById("existing-match-box").classList.add("hidden");
+      document.getElementById("unassigned-barcode-box").classList.remove("hidden");
+      setStatus(`Barcode ${currentBarcode} ist noch neu. Jetzt zuordnen oder anlegen.`);
+    }
+  }
+
+  document.getElementById("btn-lookup-barcode").addEventListener("click", () => {
+    handleBarcodeDetected(document.getElementById("manual-barcode").value);
+  });
+
+  // Bestehendes Filament mit Barcode verknüpfen
+  document.getElementById("btn-link-existing").addEventListener("click", async () => {
+    const idx = parseInt(document.getElementById("link-existing-select").value, 10);
+    if (isNaN(idx) || !filamente[idx]) return;
+    filamente[idx].barcode = currentBarcode;
+    await saveFilamenteToGitHub(`Barcode ${currentBarcode} mit ${filamente[idx].name} verknüpft`);
+    handleBarcodeDetected(currentBarcode);
+  });
+
+  // Neues Filament anlegen
+  document.getElementById("btn-create-new").addEventListener("click", async () => {
+    const name = document.getElementById("new-fil-name").value.trim();
+    const material = document.getElementById("new-fil-mat").value.trim() || "PLA";
+    const qty = parseInt(document.getElementById("new-fil-qty").value, 10) || 1;
+    const farbcode = document.getElementById("new-fil-color").value;
+
+    if (!name) {
+      setStatus("Bitte einen Namen für das Filament eingeben.", "err");
+      return;
+    }
+
+    filamente.push({
+      name,
+      material,
+      farbcode,
+      verfuegbar: formatStatus(qty),
+      notiz: "Per Barcode-App angelegt",
+      barcode: currentBarcode
+    });
+
+    const ok = await saveFilamenteToGitHub(`Neues Filament angelegt: ${name}`);
+    if (ok) handleBarcodeDetected(currentBarcode);
+  });
+
+  // Kamera-Barcodescanner (Native Android Chrome BarcodeDetector)
+  async function startScanner() {
+    if (!("BarcodeDetector" in window)) {
+      setStatus("Dein Browser unterstützt keinen nativen Barcode-Scanner. Bitte Google Chrome auf Android nutzen oder Code manuell eingeben.", "err");
+      return;
+    }
+
+    try {
+      const detector = new BarcodeDetector({
+        formats: ["ean_13", "ean_8", "upc_a", "upc_e", "code_128", "code_39", "qr_code"]
+      });
+
+      videoStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }
+      });
+
+      const video = document.getElementById("scanner-video");
+      video.srcObject = videoStream;
+      await video.play();
+
+      document.getElementById("video-wrapper").classList.add("active");
+      document.getElementById("btn-start-scan").classList.add("hidden");
+      document.getElementById("btn-stop-scan").classList.remove("hidden");
+      setStatus("Kamera aktiv – halte den Barcode in das grüne Feld.");
+
+      scanInterval = setInterval(async () => {
+        if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+        try {
+          const barcodes = await detector.detect(video);
+          if (barcodes.length > 0) {
+            const code = barcodes[0].rawValue;
+            stopScanner();
+            handleBarcodeDetected(code);
+          }
+        } catch (e) {}
+      }, 300);
+    } catch (err) {
+      setStatus("Kamera-Zugriff verweigert: " + err.message, "err");
+    }
+  }
+
+  function stopScanner() {
+    if (scanInterval) clearInterval(scanInterval);
+    if (videoStream) videoStream.getTracks().forEach((t) => t.stop());
+    document.getElementById("video-wrapper").classList.remove("active");
+    document.getElementById("btn-start-scan").classList.remove("hidden");
+    document.getElementById("btn-stop-scan").classList.add("hidden");
+  }
+
+  document.getElementById("btn-start-scan").addEventListener("click", startScanner);
+  document.getElementById("btn-stop-scan").addEventListener("click", stopScanner);
+
+  // KI-Etiketten-Erkennung über LM Studio
+  document.getElementById("btn-ai-detect").addEventListener("click", async () => {
+    const fileInput = document.getElementById("ai-spool-photo");
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) {
+      setStatus("Bitte zuerst ein Foto vom Spulen-Etikett aufnehmen!", "err");
+      return;
+    }
+
+    setStatus("KI liest Spulen-Etikett aus...");
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const res = await fetch(`${cfg.aiUrl}/chat/completions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "google/gemma-4-e4b",
+            messages: [
+              {
+                role: "system",
+                content: 'Lies das Filament-Etikett aus. Antworte NUR mit JSON ohne Markdown: {"name":"Farbe (Hersteller)","material":"PLA oder PETG","farbcode":"#HexWert"}'
+              },
+              {
+                role: "user",
+                content: [
+                  { type: "text", text: "Erkenne Farbe, Hersteller, Material und Hex-Farbcode von dieser Filament-Spule." },
+                  { type: "image_url", image_url: { url: ev.target.result } }
+                ]
+              }
+            ],
+            temperature: 0.2
+          })
+        });
+
+        const data = await res.json();
+        const raw = (data.choices?.[0]?.message?.content || "").replace(/```json|```/g, "").trim();
+        const parsed = JSON.parse(raw);
+
+        if (parsed.name) document.getElementById("new-fil-name").value = parsed.name;
+        if (parsed.material) document.getElementById("new-fil-mat").value = parsed.material;
+        if (/^#[0-9A-Fa-f]{6}$/.test(parsed.farbcode)) document.getElementById("new-fil-color").value = parsed.farbcode;
+        setStatus("Etikett per KI erkannt! Jetzt auf „Neues Filament speichern“ tippen.", "ok");
+      } catch (err) {
+        setStatus("KI-Fehler: " + err.message, "err");
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("btn-sync").addEventListener("click", loadFilamente);
+
+  // Start
+  loadFilamente();
+</script>
+</body>
+</html>
