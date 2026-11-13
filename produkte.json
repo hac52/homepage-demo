@@ -1,36 +1,4 @@
 {
-  "farben": [
-    "Orange",
-    "Blau",
-    "Bunt",
-    "Pink",
-    "Weiß",
-    "Schwarz",
-    "Grün",
-    "Gelb",
-    "Rot",
-    "Grau"
-  ],
-  "mottos": [
-    "Weihnachten",
-    "Deko",
-    "Gaming",
-    "Alltag",
-    "Geschenk",
-    "Kirche",
-    "Glaube",
-    "Religion"
-  ],
-  "zusatzfilter": [
-    {
-      "kategorie": "Material",
-      "werte": [
-        "PETG",
-        "PLA",
-        "Flexibel"
-      ]
-    }
-  ],
   "produkte": [
     {
       "id": "hirsch-orange",
@@ -86,20 +54,6 @@
       "beschreibung": "Osterkreuz Grau",
       "masse": "20cm",
       "material": "PETG",
-      "shopify": "#",
-      "etsy": "#"
-    },
-    {
-      "id": "test",
-      "titel": "test",
-      "farbe": "test",
-      "motto": "test",
-      "eigenschaften": [],
-      "bild": "/modelle/ki model.jpg",
-      "kurzbeschreibung": "test",
-      "beschreibung": "test",
-      "masse": "",
-      "material": "PLA",
       "shopify": "#",
       "etsy": "#"
     }

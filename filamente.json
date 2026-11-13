@@ -1,0 +1,25 @@
+{
+  "filamente": [
+    {
+      "name": "Orange Matt",
+      "material": "PLA",
+      "farbcode": "#f97316",
+      "verfuegbar": "Auf Lager",
+      "notiz": "Seidenmatte Oberfläche"
+    },
+    {
+      "name": "Transluzentes Eisblau",
+      "material": "PLA",
+      "farbcode": "#38bdf8",
+      "verfuegbar": "Auf Lager",
+      "notiz": "Ideal für LED-Teelichter"
+    },
+    {
+      "name": "Grau",
+      "material": "PETG",
+      "farbcode": "#6b7280",
+      "verfuegbar": "Auf Lager",
+      "notiz": "Stabil und wetterfest"
+    }
+  ]
+}

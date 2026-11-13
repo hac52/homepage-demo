@@ -1,0 +1,34 @@
+{
+  "farben": [
+    "Orange",
+    "Blau",
+    "Bunt",
+    "Pink",
+    "Weiß",
+    "Schwarz",
+    "Grün",
+    "Gelb",
+    "Rot",
+    "Grau"
+  ],
+  "mottos": [
+    "Weihnachten",
+    "Deko",
+    "Gaming",
+    "Alltag",
+    "Geschenk",
+    "Kirche",
+    "Glaube",
+    "Religion"
+  ],
+  "zusatzfilter": [
+    {
+      "kategorie": "Material",
+      "werte": [
+        "PETG",
+        "PLA",
+        "Flexibel"
+      ]
+    }
+  ]
+}
