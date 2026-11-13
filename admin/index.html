@@ -25,9 +25,9 @@
       position: fixed;
       bottom: 72px;
       left: 20px;
-      width: 400px;
+      width: 440px;
       max-width: calc(100vw - 40px);
-      max-height: 85vh;
+      max-height: 86vh;
       overflow-y: auto;
       background: #1f2937;
       color: #f9fafb;
@@ -44,21 +44,23 @@
     #ki-scanner-panel.open { display: flex; }
     .ki-tabs {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       background: #111827;
       padding: 4px;
       border-radius: 8px;
+      flex-wrap: wrap;
     }
     .ki-tab-btn {
       flex: 1;
       background: transparent;
       color: #9ca3af;
       border: none;
-      padding: 7px;
+      padding: 7px 4px;
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
+      white-space: nowrap;
     }
     .ki-tab-btn.active {
       background: #374151;
@@ -72,7 +74,7 @@
     .ki-section.active { display: flex; }
     .ki-label { font-size: 11px; color: #9ca3af; margin-bottom: -4px; }
     .ki-field-row { display: flex; gap: 6px; align-items: center; }
-    .ki-field-row input, .ki-field-row textarea {
+    .ki-field-row input, .ki-field-row textarea, #ki-list-json, #ki-chat-input {
       flex: 1;
       background: #111827;
       color: #fff;
@@ -81,6 +83,13 @@
       padding: 6px 8px;
       font-size: 13px;
       font-family: inherit;
+    }
+    #ki-list-json {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      line-height: 1.4;
+      width: 100%;
+      box-sizing: border-box;
     }
     .ki-copy-btn {
       background: #2563eb;
@@ -91,6 +100,36 @@
       font-size: 12px;
       cursor: pointer;
       white-space: nowrap;
+    }
+    /* Chat-Bereich im Admin */
+    #ki-chat-box {
+      background: #111827;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 10px;
+      height: 260px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .ki-chat-msg {
+      padding: 8px 10px;
+      border-radius: 8px;
+      max-width: 85%;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+    .ki-chat-msg.user {
+      background: #2563eb;
+      color: #fff;
+      align-self: flex-end;
+    }
+    .ki-chat-msg.bot {
+      background: #374151;
+      color: #f9fafb;
+      align-self: flex-start;
     }
   </style>
 </head>
@@ -107,29 +146,49 @@
       <button id="ki-scanner-close" type="button" style="background:none;border:none;color:#9ca3af;font-size:16px;cursor:pointer;">✕</button>
     </div>
 
-    <!-- Modus-Umschalter -->
+    <!-- 4-Wege Modus-Umschalter -->
     <div class="ki-tabs">
-      <button type="button" class="ki-tab-btn active" data-tab="tab-produkt">📦 Produkt</button>
+      <button type="button" class="ki-tab-btn active" data-tab="tab-chat">💬 Assistent</button>
+      <button type="button" class="ki-tab-btn" data-tab="tab-produkt">📦 Produkt</button>
       <button type="button" class="ki-tab-btn" data-tab="tab-filament">🧵 Filament</button>
+      <button type="button" class="ki-tab-btn" data-tab="tab-liste">📋 Liste</button>
     </div>
 
-    <!-- Gemeinsame Eingabe: Bild &/oder Text -->
-    <span class="ki-label">Foto hochladen (optional bei Texteingabe)</span>
-    <input type="file" id="ki-image-input" accept="image/*" style="font-size:13px;">
-    <img id="ki-preview" src="" alt="Vorschau" style="max-height:110px; object-fit:contain; display:none; border-radius:6px; background:#111827;">
-
-    <span class="ki-label">Zusatz-Info / Texteingabe (z. B. "Bambu PLA Seide Gold, wenig Bestand")</span>
-    <textarea id="ki-text-prompt" rows="2" placeholder="Optional: Infos zu Farbe, Material, Status oder Besonderheiten eintippen..."></textarea>
-
-    <button id="ki-run-btn" type="button" style="background:#10b981; color:#fff; border:none; padding:9px; border-radius:6px; font-weight:600; cursor:pointer;">
-      Mit KI analysieren
-    </button>
-    <div id="ki-status" style="font-size:12px; color:#d1d5db;"></div>
+    <!-- ========================================== -->
+    <!-- BEREICH 0: BESTANDS- & SORTIMENTS-CHAT     -->
+    <!-- ========================================== -->
+    <div id="tab-chat" class="ki-section active">
+      <div id="ki-chat-box">
+        <div class="ki-chat-msg bot">Hallo! Frag mich alles zu deinem aktuellen Produkt-Sortiment, deinen Filtern oder deinem Filament-Bestand (z. B. „Welche Filamente haben nur noch wenig Bestand?“).</div>
+      </div>
+      <div class="ki-field-row">
+        <input type="text" id="ki-chat-input" placeholder="Frage zum Bestand oder Sortiment...">
+        <button type="button" id="ki-chat-send" style="background:#10b981; color:#fff; border:none; border-radius:6px; padding:7px 12px; font-weight:600; cursor:pointer;">Fragen</button>
+      </div>
+      <button type="button" id="ki-chat-clear" style="background:none; border:none; color:#9ca3af; font-size:11px; text-align:right; cursor:pointer; padding:0;">Verlauf löschen</button>
+    </div>
 
     <!-- ========================================== -->
-    <!-- BEREICH 1: PRODUKT-FELDER                  -->
+    <!-- GEMEINSAME EINGABE FÜR SCANNER-TABS        -->
     <!-- ========================================== -->
-    <div id="tab-produkt" class="ki-section active">
+    <div id="ki-scanner-inputs" style="display:none; flex-direction:column; gap:8px;">
+      <span class="ki-label">Foto hochladen (Produkt, Spule oder handgeschriebener Zettel)</span>
+      <input type="file" id="ki-image-input" accept="image/*" style="font-size:13px;">
+      <img id="ki-preview" src="" alt="Vorschau" style="max-height:110px; object-fit:contain; display:none; border-radius:6px; background:#111827;">
+
+      <span class="ki-label">Zusatz-Info / Texteingabe (optional)</span>
+      <textarea id="ki-text-prompt" rows="2" placeholder="Optional: z. B. 'Bambu PLA Seide Gold, wenig Bestand' oder Korrekturhinweise..."></textarea>
+
+      <button id="ki-run-btn" type="button" style="background:#10b981; color:#fff; border:none; padding:9px; border-radius:6px; font-weight:600; cursor:pointer;">
+        Mit KI analysieren
+      </button>
+      <div id="ki-status" style="font-size:12px; color:#d1d5db;"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- BEREICH 1: EINZELNES PRODUKT               -->
+    <!-- ========================================== -->
+    <div id="tab-produkt" class="ki-section">
       <span class="ki-label">Produkt-ID</span>
       <div class="ki-field-row">
         <input type="text" id="ki-out-id" placeholder="z. B. drache-bunt">
@@ -171,10 +230,14 @@
         <input type="text" id="ki-out-material" placeholder="PLA">
         <button type="button" class="ki-copy-btn" data-target="ki-out-material">Kopieren</button>
       </div>
+
+      <button id="ki-autofill-prod-btn" type="button" style="background:#4f46e5; color:#fff; border:none; padding:9px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; margin-top:4px;">
+        In offenes Sveltia-Produkt übertragen
+      </button>
     </div>
 
     <!-- ========================================== -->
-    <!-- BEREICH 2: FILAMENT-FELDER                 -->
+    <!-- BEREICH 2: EINZELNES FILAMENT              -->
     <!-- ========================================== -->
     <div id="tab-filament" class="ki-section">
       <span class="ki-label">Filament-Name / Farbe</span>
@@ -207,11 +270,28 @@
         <input type="text" id="ki-fil-notiz" placeholder="z. B. Glänzend, Wetterfest">
         <button type="button" class="ki-copy-btn" data-target="ki-fil-notiz">Kopieren</button>
       </div>
+
+      <button id="ki-autofill-fil-btn" type="button" style="background:#4f46e5; color:#fff; border:none; padding:9px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; margin-top:4px;">
+        In offenes Sveltia-Filament übertragen
+      </button>
     </div>
 
-    <button id="ki-autofill-btn" type="button" style="background:#4f46e5; color:#fff; border:none; padding:9px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; margin-top:4px;">
-      In offenes Sveltia-Formular übertragen
-    </button>
+    <!-- ========================================== -->
+    <!-- BEREICH 3: HANDGESCHRIEBENE INVENTAR-LISTE -->
+    <!-- ========================================== -->
+    <div id="tab-liste" class="ki-section">
+      <span class="ki-label">Erkannte filamente.json (alle Einträge vom Zettel)</span>
+      <textarea id="ki-list-json" rows="10" placeholder='Hier erscheint die fertige filamente.json nach der Analyse...'></textarea>
+      
+      <div style="display:flex; gap:6px;">
+        <button type="button" class="ki-copy-btn" data-target="ki-list-json" style="flex:1; padding:9px; font-weight:600;">
+          JSON kopieren
+        </button>
+        <button type="button" id="ki-download-json-btn" style="flex:1; background:#059669; color:#fff; border:none; border-radius:6px; padding:9px; font-size:12px; font-weight:600; cursor:pointer;">
+          filamente.json speichern
+        </button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -221,22 +301,23 @@
     const panel = document.getElementById("ki-scanner-panel");
     const openBtn = document.getElementById("ki-scanner-btn");
     const closeBtn = document.getElementById("ki-scanner-close");
+    const scannerInputsBox = document.getElementById("ki-scanner-inputs");
     const fileInput = document.getElementById("ki-image-input");
     const preview = document.getElementById("ki-preview");
     const textPromptInput = document.getElementById("ki-text-prompt");
     const runBtn = document.getElementById("ki-run-btn");
     const statusEl = document.getElementById("ki-status");
-    const autofillBtn = document.getElementById("ki-autofill-btn");
     const colorPicker = document.getElementById("ki-fil-colorpicker");
     const colorText = document.getElementById("ki-fil-farbcode");
 
-    let base64Image = "";
-    let activeMode = "tab-produkt";
+    let selectedFile = null;
+    let activeMode = "tab-chat";
+    let adminChatHistory = [];
 
     openBtn.addEventListener("click", () => panel.classList.toggle("open"));
     closeBtn.addEventListener("click", () => panel.classList.remove("open"));
 
-    // Tab-Wechsel (Produkt vs. Filament)
+    // Tab-Wechsel zwischen Chat und den 3 Scanner-Modi
     document.querySelectorAll(".ki-tab-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".ki-tab-btn").forEach((b) => b.classList.remove("active"));
@@ -244,77 +325,227 @@
         btn.classList.add("active");
         activeMode = btn.dataset.tab;
         document.getElementById(activeMode).classList.add("active");
+        scannerInputsBox.style.display = activeMode === "tab-chat" ? "none" : "flex";
         statusEl.textContent = "";
       });
     });
 
-    // Farb-Picker synchronisieren
+    // =========================================================
+    // ADMIN-ASSISTENT CHAT (Lädt live Produkte, Filamente & Filter)
+    // =========================================================
+    const chatBox = document.getElementById("ki-chat-box");
+    const chatInput = document.getElementById("ki-chat-input");
+    const chatSendBtn = document.getElementById("ki-chat-send");
+
+    function appendAdminMsg(text, sender) {
+      const div = document.createElement("div");
+      div.className = `ki-chat-msg ${sender}`;
+      div.innerHTML = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\n/g, "<br>");
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return div;
+    }
+
+    async function loadAdminInventoryContext() {
+      try {
+        const [prodRes, filRes, filtRes] = await Promise.all([
+          fetch("../produkte.json?t=" + Date.now()).catch(() => null),
+          fetch("../filamente.json?t=" + Date.now()).catch(() => null),
+          fetch("../filter.json?t=" + Date.now()).catch(() => null)
+        ]);
+
+        const prodData = prodRes && prodRes.ok ? await prodRes.json() : { produkte: [] };
+        const filData = filRes && filRes.ok ? await filRes.json() : { filamente: [] };
+        const filtData = filtRes && filtRes.ok ? await filtRes.json() : {};
+
+        const produkteText = (prodData.produkte || [])
+          .map((p) => `- [${p.id}] ${p.titel} | Farbe: ${p.farbe} | Motto: ${p.motto} | Material: ${p.material} | Maße: ${p.masse || "k.A."}`)
+          .join("\n") || "Keine Produkte gefunden.";
+
+        const filamenteText = (filData.filamente || [])
+          .map((f) => `- ${f.name} | Material: ${f.material} | Status: ${f.verfuegbar} | Notiz: ${f.notiz || "-"}`)
+          .join("\n") || "Keine Filamente gefunden.";
+
+        const filterText = `Farben: ${(filtData.farben || []).join(", ")} | Mottos: ${(filtData.mottos || []).join(", ")}`;
+
+        return `AKTUELLE PRODUKTE (${(prodData.produkte || []).length} Stück):\n${produkteText}\n\nAKTUELLES FILAMENT-SORTIMENT (${(filData.filamente || []).length} Rollen/Einträge):\n${filamenteText}\n\nANGELEGTE FILTER:\n${filterText}`;
+      } catch (e) {
+        return "Inventardaten konnten nicht geladen werden.";
+      }
+    }
+
+    async function sendAdminChat() {
+      const question = chatInput.value.trim();
+      if (!question) return;
+
+      chatInput.value = "";
+      appendAdminMsg(question, "user");
+      const loadingDiv = appendAdminMsg("Prüfe Bestand...", "bot");
+
+      const inventoryContext = await loadAdminInventoryContext();
+      adminChatHistory.push({ role: "user", content: question });
+      if (adminChatHistory.length > 10) adminChatHistory = adminChatHistory.slice(-10);
+
+      try {
+        const res = await fetch(`${LM_STUDIO_BASE_URL}/chat/completions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: MODEL_NAME,
+            messages: [
+              {
+                role: "system",
+                content: `Du bist der interne Admin-Assistent für "Schicht für Schicht 3D Drucke". Beantworte Fragen des Shop-Betreibers präzise, übersichtlich und auf Deutsch basierend auf den folgenden aktuellen Shop-Daten:\n\n${inventoryContext}`
+              },
+              ...adminChatHistory
+            ],
+            temperature: 0.3
+          })
+        });
+
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || "Keine Antwort erhalten.";
+        adminChatHistory.push({ role: "assistant", content: reply });
+        loadingDiv.innerHTML = reply
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\n/g, "<br>");
+      } catch (err) {
+        adminChatHistory.pop();
+        loadingDiv.textContent = "Verbindung zu LM Studio fehlgeschlagen.";
+      }
+    }
+
+    chatSendBtn.addEventListener("click", sendAdminChat);
+    chatInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendAdminChat();
+    });
+    document.getElementById("ki-chat-clear").addEventListener("click", () => {
+      adminChatHistory = [];
+      chatBox.innerHTML = '<div class="ki-chat-msg bot">Verlauf gelöscht. Was möchtest du über deinen Bestand wissen?</div>';
+    });
+
+    // =========================================================
+    // SCANNER & SVELTIA AUTOFILL FUNKTIONEN
+    // =========================================================
     colorPicker.addEventListener("input", () => (colorText.value = colorPicker.value));
     colorText.addEventListener("input", () => {
       if (/^#[0-9A-Fa-f]{6}$/.test(colorText.value)) colorPicker.value = colorText.value;
     });
 
-    // Kopier-Buttons
     document.querySelectorAll(".ki-copy-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const el = document.getElementById(btn.dataset.target);
         navigator.clipboard.writeText(el.value);
         const orig = btn.textContent;
-        btn.textContent = "✓";
-        setTimeout(() => (btn.textContent = orig), 1200);
+        btn.textContent = "✓ Kopiert";
+        setTimeout(() => (btn.textContent = orig), 1400);
       });
     });
 
-    // Bild verkleinern & Base64 erzeugen
+    document.getElementById("ki-download-json-btn").addEventListener("click", () => {
+      const content = document.getElementById("ki-list-json").value.trim();
+      if (!content) {
+        statusEl.textContent = "Keine JSON-Daten zum Speichern vorhanden.";
+        return;
+      }
+      const blob = new Blob([content], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "filamente.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      statusEl.textContent = "filamente.json heruntergeladen! Jetzt auf GitHub hochladen.";
+    });
+
     fileInput.addEventListener("change", (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      selectedFile = file;
       const reader = new FileReader();
       reader.onload = (ev) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const scale = Math.min(1, 800 / img.width);
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-          base64Image = canvas.toDataURL("image/jpeg", 0.85);
-          preview.src = base64Image;
-          preview.style.display = "block";
-        };
-        img.src = ev.target.result;
+        preview.src = ev.target.result;
+        preview.style.display = "block";
       };
       reader.readAsDataURL(file);
     });
 
-    // KI-Analyse starten (unterstützt Bild, Text oder beides gleichzeitig)
+    function prepareBase64(file, maxDimension) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const maxSide = Math.max(img.width, img.height);
+            const scale = Math.min(1, maxDimension / maxSide);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL("image/jpeg", 0.9));
+          };
+          img.onerror = reject;
+          img.src = ev.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
     runBtn.addEventListener("click", async () => {
       const userNote = textPromptInput.value.trim();
 
-      if (!base64Image && !userNote) {
+      if (!selectedFile && !userNote) {
         statusEl.textContent = "Bitte ein Foto hochladen oder eine Text-Notiz eingeben.";
         return;
       }
 
-      statusEl.textContent = "Gemma-4 verarbeitet deine Eingabe...";
+      statusEl.textContent =
+        activeMode === "tab-liste"
+          ? "Gemma-4 liest alle Zeilen vom Zettel aus (dauert ca. 10–20 Sek.)..."
+          : "Gemma-4 verarbeitet deine Eingabe...";
       runBtn.disabled = true;
 
-      const isFilament = activeMode === "tab-filament";
+      let systemPrompt = "";
+      let taskInstruction = "";
 
-      const systemPrompt = isFilament
-        ? 'Du bist Material-Verwalter eines 3D-Druck-Shops. Analysiere das Foto (z. B. Filament-Spule oder Etikett) und/oder den Text des Nutzers. Antworte AUSSCHLIESSLICH mit einem gültigen JSON-Objekt ohne Markdown in diesem Format: {"name":"Farbname z.B. Matt Schwarz","material":"PLA oder PETG oder TPU","farbcode":"#HexFarbwert","verfuegbar":"Auf Lager oder Wenig Bestand oder Leer","notiz":"kurze Besonderheit oder leer"}'
-        : 'Du bist Produktmanager für "Schicht für Schicht 3D Drucke". Analysiere das Foto und/oder die Text-Notiz des Nutzers. Antworte AUSSCHLIESSLICH mit einem gültigen JSON-Objekt ohne Markdown in diesem Format: {"id":"kleinbuchstaben-mit-bindestrich","titel":"...","farbe":"...","motto":"...","kurzbeschreibung":"...","beschreibung":"...","material":"PLA"}';
+      if (activeMode === "tab-liste") {
+        systemPrompt = `Du bist ein präziser Inventar-Assistent für einen 3D-Druck-Shop. Lese alle nicht durchgestrichenen Einträge einer handgeschriebenen Filament-Liste aus.
+Regeln:
+1. Ignoriere komplett durchgestrichene Zeilen oder Wörter.
+2. Erkenne Überschriften wie "PETG Anycubic", "PETG Bambu Lab", "PLA Bambu Lab", "PLA Fremdhersteller" und ordne jedem Eintrag darunter das richtige "material" (z.B. "PETG" oder "PLA") und den Hersteller zu.
+3. Formatiere "name" als "Farbe (Hersteller)", z.B. "Orange (Anycubic)" oder "Blauglitzer (Fremdhersteller)".
+4. Setze "verfuegbar" bei Stückzahl "1x" auf "Wenig Bestand (1x)", bei "2x" oder mehr auf "Auf Lager (Xx)" (mit der gelesenen Zahl) und ohne Zahl auf "Auf Lager".
+5. Schätze für "farbcode" einen passenden Hex-Farbwert (z.B. "#f97316" für Orange).
+6. Schreibe in "notiz" den Hersteller und eventuelle Besonderheiten.
+7. Antworte AUSSCHLIESSLICH mit gültigem JSON ohne Markdown-Formatierung in exakt dieser Struktur:
+{"filamente":[{"name":"...","material":"...","farbcode":"#...","verfuegbar":"...","notiz":"..."}]}`;
 
-      const taskInstruction = isFilament
-        ? `Erkenne das 3D-Druck-Filament anhand von Bild und/oder Text. Zusatz-Info vom Nutzer: "${userNote || "keine"}".`
-        : `Erstelle Produktdaten (id ohne Umlaute/Leerzeichen, titel, farbe, motto, kurzbeschreibung, beschreibung, material). Zusatz-Info vom Nutzer: "${userNote || "keine"}".`;
-
-      const userContent = [{ type: "text", text: taskInstruction }];
-      if (base64Image) {
-        userContent.push({ type: "image_url", image_url: { url: base64Image } });
+        taskInstruction = `Digitalisiere diese handgeschriebene Filament-Inventarliste vollständig in das vorgegebene JSON-Format. Zusatzhinweis vom Nutzer: "${userNote || "keiner"}".`;
+      } else if (activeMode === "tab-filament") {
+        systemPrompt =
+          'Du bist Material-Verwalter eines 3D-Druck-Shops. Analysiere das Foto und/oder den Text. Antworte AUSSCHLIESSLICH mit gültigem JSON ohne Markdown: {"name":"Farbname z.B. Matt Schwarz","material":"PLA oder PETG oder TPU","farbcode":"#HexFarbwert","verfuegbar":"Auf Lager oder Wenig Bestand oder Leer","notiz":"kurze Besonderheit oder leer"}';
+        taskInstruction = `Erkenne das 3D-Druck-Filament anhand von Bild und/oder Text. Zusatz-Info: "${userNote || "keine"}".`;
+      } else {
+        systemPrompt =
+          'Du bist Produktmanager für "Schicht für Schicht 3D Drucke". Analysiere Foto und/oder Text. Antworte AUSSCHLIESSLICH mit gültigem JSON ohne Markdown: {"id":"kleinbuchstaben-mit-bindestrich","titel":"...","farbe":"...","motto":"...","kurzbeschreibung":"...","beschreibung":"...","material":"PLA"}';
+        taskInstruction = `Erstelle Produktdaten (id ohne Umlaute/Leerzeichen, titel, farbe, motto, kurzbeschreibung, beschreibung, material). Zusatz-Info: "${userNote || "keine"}".`;
       }
 
       try {
+        const userContent = [{ type: "text", text: taskInstruction }];
+        if (selectedFile) {
+          const maxDim = activeMode === "tab-liste" ? 1500 : 800;
+          const b64 = await prepareBase64(selectedFile, maxDim);
+          userContent.push({ type: "image_url", image_url: { url: b64 } });
+        }
+
         const res = await fetch(`${LM_STUDIO_BASE_URL}/chat/completions`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -324,7 +555,7 @@
               { role: "system", content: systemPrompt },
               { role: "user", content: userContent }
             ],
-            temperature: 0.3
+            temperature: 0.2
           })
         });
 
@@ -332,13 +563,18 @@
         const raw = (data.choices?.[0]?.message?.content || "").replace(/```json|```/g, "").trim();
         const parsed = JSON.parse(raw);
 
-        if (isFilament) {
+        if (activeMode === "tab-liste") {
+          document.getElementById("ki-list-json").value = JSON.stringify(parsed, null, 2);
+          const count = Array.isArray(parsed.filamente) ? parsed.filamente.length : 0;
+          statusEl.textContent = `${count} Filamente vom Zettel erkannt! Jetzt kopieren oder als filamente.json speichern.`;
+        } else if (activeMode === "tab-filament") {
           document.getElementById("ki-fil-name").value = parsed.name || "";
           document.getElementById("ki-fil-material").value = parsed.material || "PLA";
           document.getElementById("ki-fil-farbcode").value = parsed.farbcode || "#111827";
           if (/^#[0-9A-Fa-f]{6}$/.test(parsed.farbcode)) colorPicker.value = parsed.farbcode;
           document.getElementById("ki-fil-status").value = parsed.verfuegbar || "Auf Lager";
           document.getElementById("ki-fil-notiz").value = parsed.notiz || "";
+          statusEl.textContent = "Fertig! Jetzt prüfen oder in Sveltia übertragen.";
         } else {
           document.getElementById("ki-out-id").value = parsed.id || "";
           document.getElementById("ki-out-titel").value = parsed.titel || "";
@@ -347,9 +583,8 @@
           document.getElementById("ki-out-kurz").value = parsed.kurzbeschreibung || "";
           document.getElementById("ki-out-beschreibung").value = parsed.beschreibung || "";
           document.getElementById("ki-out-material").value = parsed.material || "PLA";
+          statusEl.textContent = "Fertig! Jetzt prüfen oder in Sveltia übertragen.";
         }
-
-        statusEl.textContent = "Fertig! Jetzt prüfen oder direkt übertragen.";
       } catch (err) {
         console.error(err);
         statusEl.textContent = "Fehler bei der KI-Analyse. Prüfe LM Studio & Tailscale.";
@@ -358,7 +593,6 @@
       }
     });
 
-    // Shadow DOM & Sveltia-Formular Helfer
     function getAllDeepInputs(root = document) {
       let results = [];
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
@@ -404,27 +638,7 @@
       el.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
     }
 
-    // Überträgt die Daten je nach aktivem Tab in das offene Sveltia-Formular
-    autofillBtn.addEventListener("click", () => {
-      const mapping =
-        activeMode === "tab-filament"
-          ? [
-              { labelMatch: "filament-name", value: document.getElementById("ki-fil-name").value },
-              { labelMatch: "material-typ", value: document.getElementById("ki-fil-material").value },
-              { labelMatch: "farb-code", value: document.getElementById("ki-fil-farbcode").value },
-              { labelMatch: "status", value: document.getElementById("ki-fil-status").value },
-              { labelMatch: "notiz", value: document.getElementById("ki-fil-notiz").value }
-            ]
-          : [
-              { labelMatch: "produkt-id", value: document.getElementById("ki-out-id").value },
-              { labelMatch: "produktname", value: document.getElementById("ki-out-titel").value },
-              { labelMatch: "hauptfarbe", value: document.getElementById("ki-out-farbe").value },
-              { labelMatch: "motto / kategorie", value: document.getElementById("ki-out-motto").value },
-              { labelMatch: "kurzbeschreibung", value: document.getElementById("ki-out-kurz").value },
-              { labelMatch: "ausführliche beschreibung", value: document.getElementById("ki-out-beschreibung").value },
-              { labelMatch: "material / filament", value: document.getElementById("ki-out-material").value }
-            ];
-
+    function fillSveltiaFields(mapping) {
       const allFields = getAllDeepInputs(document);
       let filledCount = 0;
 
@@ -442,6 +656,28 @@
         filledCount > 0
           ? `${filledCount} Felder in Sveltia CMS ausgefüllt!`
           : "Keine offenen Felder gefunden – bitte zuerst den Eintrag in Sveltia aufklappen.";
+    }
+
+    document.getElementById("ki-autofill-prod-btn").addEventListener("click", () => {
+      fillSveltiaFields([
+        { labelMatch: "produkt-id", value: document.getElementById("ki-out-id").value },
+        { labelMatch: "produktname", value: document.getElementById("ki-out-titel").value },
+        { labelMatch: "hauptfarbe", value: document.getElementById("ki-out-farbe").value },
+        { labelMatch: "motto / kategorie", value: document.getElementById("ki-out-motto").value },
+        { labelMatch: "kurzbeschreibung", value: document.getElementById("ki-out-kurz").value },
+        { labelMatch: "ausführliche beschreibung", value: document.getElementById("ki-out-beschreibung").value },
+        { labelMatch: "material / filament", value: document.getElementById("ki-out-material").value }
+      ]);
+    });
+
+    document.getElementById("ki-autofill-fil-btn").addEventListener("click", () => {
+      fillSveltiaFields([
+        { labelMatch: "filament-name", value: document.getElementById("ki-fil-name").value },
+        { labelMatch: "material-typ", value: document.getElementById("ki-fil-material").value },
+        { labelMatch: "farb-code", value: document.getElementById("ki-fil-farbcode").value },
+        { labelMatch: "status", value: document.getElementById("ki-fil-status").value },
+        { labelMatch: "notiz", value: document.getElementById("ki-fil-notiz").value }
+      ]);
     });
   </script>
 </body>
