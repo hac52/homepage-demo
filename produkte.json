@@ -5,6 +5,7 @@
       "titel": "Moderner Lamellen-Hirsch",
       "farbe": "Orange",
       "motto": "Weihnachten",
+      "preis": 29.9,
       "eigenschaften": [
         {
           "kategorie": "Material",
@@ -12,8 +13,8 @@
         }
       ],
       "bild": "modelle/hirsch-orange.jpg",
-      "kurzbeschreibung": "Stylische Hirsch-Skulptur im modernen Lamellen-Design. Sorgt in warmem Orange für einen echten Blickfang auf dem Regal oder Sideboard. Umweltfreundlich aus hochwertigem PLA gefertigt.",
-      "beschreibung": "Diese moderne Hirsch-Figur besticht durch ihre feine vertikale Lamellen-Struktur, die je nach Blickwinkel faszinierende Licht- und Schatteneffekte erzeugt.\n\nPerfekt als herbstliche oder winterliche Dekoration für Wohnzimmer, Flur oder Schreibtisch. Jedes Stück wird in Stuttgart Schicht für Schicht mit höchster Präzision aus biologisch abbaubarem PLA-Filament gedruckt.",
+      "kurzbeschreibung": "Stylische Hirsch-Skulptur im modernen Lamellen-Design. Sorgt in warmem Orange für einen echten Blickfang auf dem Regal oder Sideboard. Umweltfreundlich aus hochwertigem PLA.",
+      "beschreibung": "Diese moderne Hirsch-Figur besticht durch ihre feine vertikale Lamellen-Struktur, die je nach Blickwinkel faszinierende Licht- und Schatteneffekte erzeugt.\n\nPerfekt als Herbst- oder Weihnachtsdeko für Wohnräume, Schreibtische oder als Geschenkidee.",
       "masse": "Höhe: ca. 22 cm | Breite: ca. 10 cm",
       "material": "Hochwertiges PLA (Orange, matt)",
       "shopify": "#",
@@ -24,6 +25,7 @@
       "titel": "Winterwald-Tannenbaum",
       "farbe": "Blau",
       "motto": "Weihnachten",
+      "preis": 34.9,
       "eigenschaften": [
         {
           "kategorie": "Material",
@@ -32,7 +34,7 @@
       ],
       "bild": "modelle/weihnachtsbaum-blau.jpg",
       "kurzbeschreibung": "Detailreicher Tannenbaum mit feiner Winterwald-Silhouette und Hirsch-Motiv im Inneren. Ideal für ein elektrisches LED-Teelicht (nur LED verwenden!).",
-      "beschreibung": "Ein zauberhafter Blickfang für die Advents- und Winterzeit: Im Inneren dieses eisblauen Tannenbaums verbirgt sich eine filigrane Waldlandschaft mit Bäumen und einem stolzen Hirsch.\n\nSobald du ein elektrisches LED-Teelicht hineinstellst, leuchten die Sterne und Schneeflocken an der Außenhülle stimmungsvoll auf.\n\nWichtiger Sicherheitshinweis: Bitte ausschließlich mit elektrischen LED-Lichtern verwenden – kein echtes Feuer!",
+      "beschreibung": "Ein zauberhafter Blickfang für die Advents- und Winterzeit: Im Inneren dieses eisblauen Tannenbaums verbirgt sich eine filigrane Waldlandschaft mit Bäumen und einem stolzen Hirsch.",
       "masse": "Höhe: ca. 19 cm | Durchmesser: ca. 12 cm",
       "material": "Transluzentes Eisblau-PLA",
       "shopify": "#",
@@ -43,6 +45,7 @@
       "titel": "Osterkreuz",
       "farbe": "Grau",
       "motto": "Religion",
+      "preis": 19.9,
       "eigenschaften": [
         {
           "kategorie": "Material",
@@ -62,6 +65,7 @@
       "titel": "Winterliches Miniatur-Diorama Stadtbild",
       "farbe": "Weiß / Off-White",
       "motto": "Deko, Weihnachten",
+      "preis": 42.5,
       "eigenschaften": [
         {
           "kategorie": "Produktart",
@@ -78,7 +82,7 @@
       ],
       "bild": "modelle/miniatur-stadtlandschaft-01-1794592923413.jpg",
       "kurzbeschreibung": "Ein detailliertes, dreidimensional gedrucktes Diorama, das eine idyllische und winterliche Kleinstadtlandschaft darstellt.",
-      "beschreibung": "Das Produkt ist ein auf einer flachen Basis montiertes Miniatur-Diorama. Es umfasst mehrere architektonisch gestaltete Gebäude in europäischem Stil, einen zentralen Uhrturm, sowie verschiedene Elemente wie Bäume und eine Teichfläche. Die gesamte Szenerie ist als zusammenhängendes Set konzipiert und eignet sich hervorragend zur Dekoration oder zum Modellbau.",
+      "beschreibung": "Das Produkt ist ein auf einer flachen Basis montiertes Miniatur-Diorama. Es umfasst mehrere architektonisch gestaltete Gebäude in europäischem Stil, einen zentralen Uhrturm, eine Teichfläche und winterliche Bäume.",
       "masse": "",
       "material": "3D-gedruckter Kunststoff/Harz",
       "shopify": "#",
