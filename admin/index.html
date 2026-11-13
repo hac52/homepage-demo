@@ -5,11 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel – Schicht für Schicht 3D Drucke</title>
   <style>
-    #ki-scanner-btn {
+    .admin-floating-bar {
       position: fixed;
       bottom: 20px;
       left: 20px;
       z-index: 99999;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    #ki-scanner-btn, #barcode-link-btn {
       background: #111827;
       color: #fff;
       border: 1px solid #374151;
@@ -20,14 +25,23 @@
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    #ki-scanner-btn:hover, #barcode-link-btn:hover {
+      background: #1f2937;
+      transform: translateY(-1px);
     }
     #ki-scanner-panel {
       position: fixed;
-      bottom: 72px;
+      bottom: 76px;
       left: 20px;
       width: 440px;
       max-width: calc(100vw - 40px);
-      max-height: 86vh;
+      max-height: 85vh;
       overflow-y: auto;
       background: #1f2937;
       color: #f9fafb;
@@ -101,7 +115,6 @@
       cursor: pointer;
       white-space: nowrap;
     }
-    /* Chat-Bereich im Admin */
     #ki-chat-box {
       background: #111827;
       border: 1px solid #374151;
@@ -136,8 +149,11 @@
 <body>
   <script src="./sveltia-cms.js"></script>
 
-  <!-- Schwebender Button -->
-  <button id="ki-scanner-btn" type="button">✨ KI-Admin-Assistent</button>
+  <!-- Schwebende Buttons unten links: KI-Assistent & Barcode-Scanner -->
+  <div class="admin-floating-bar">
+    <button id="ki-scanner-btn" type="button">✨ KI-Admin-Assistent</button>
+    <a id="barcode-link-btn" href="../scanner.html" title="Zum mobilen Filament-Barcodescanner wechseln">📷 Barcode-Scanner</a>
+  </div>
 
   <!-- KI-Panel -->
   <div id="ki-scanner-panel">
@@ -154,9 +170,7 @@
       <button type="button" class="ki-tab-btn" data-tab="tab-liste">📋 Liste</button>
     </div>
 
-    <!-- ========================================== -->
-    <!-- BEREICH 0: BESTANDS- & SORTIMENTS-CHAT     -->
-    <!-- ========================================== -->
+    <!-- BEREICH 0: BESTANDS- & SORTIMENTS-CHAT -->
     <div id="tab-chat" class="ki-section active">
       <div id="ki-chat-box">
         <div class="ki-chat-msg bot">Hallo! Frag mich alles zu deinem aktuellen Produkt-Sortiment, deinen Filtern oder deinem Filament-Bestand (z. B. „Welche Filamente haben nur noch wenig Bestand?“).</div>
@@ -168,9 +182,7 @@
       <button type="button" id="ki-chat-clear" style="background:none; border:none; color:#9ca3af; font-size:11px; text-align:right; cursor:pointer; padding:0;">Verlauf löschen</button>
     </div>
 
-    <!-- ========================================== -->
-    <!-- GEMEINSAME EINGABE FÜR SCANNER-TABS        -->
-    <!-- ========================================== -->
+    <!-- GEMEINSAME EINGABE FÜR SCANNER-TABS -->
     <div id="ki-scanner-inputs" style="display:none; flex-direction:column; gap:8px;">
       <span class="ki-label">Foto hochladen (Produkt, Spule oder handgeschriebener Zettel)</span>
       <input type="file" id="ki-image-input" accept="image/*" style="font-size:13px;">
@@ -185,9 +197,7 @@
       <div id="ki-status" style="font-size:12px; color:#d1d5db;"></div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- BEREICH 1: EINZELNES PRODUKT               -->
-    <!-- ========================================== -->
+    <!-- BEREICH 1: EINZELNES PRODUKT -->
     <div id="tab-produkt" class="ki-section">
       <span class="ki-label">Produkt-ID</span>
       <div class="ki-field-row">
@@ -236,9 +246,7 @@
       </button>
     </div>
 
-    <!-- ========================================== -->
-    <!-- BEREICH 2: EINZELNES FILAMENT              -->
-    <!-- ========================================== -->
+    <!-- BEREICH 2: EINZELNES FILAMENT -->
     <div id="tab-filament" class="ki-section">
       <span class="ki-label">Filament-Name / Farbe</span>
       <div class="ki-field-row">
@@ -276,9 +284,7 @@
       </button>
     </div>
 
-    <!-- ========================================== -->
     <!-- BEREICH 3: HANDGESCHRIEBENE INVENTAR-LISTE -->
-    <!-- ========================================== -->
     <div id="tab-liste" class="ki-section">
       <span class="ki-label">Erkannte filamente.json (alle Einträge vom Zettel)</span>
       <textarea id="ki-list-json" rows="10" placeholder='Hier erscheint die fertige filamente.json nach der Analyse...'></textarea>
@@ -317,7 +323,6 @@
     openBtn.addEventListener("click", () => panel.classList.toggle("open"));
     closeBtn.addEventListener("click", () => panel.classList.remove("open"));
 
-    // Tab-Wechsel zwischen Chat und den 3 Scanner-Modi
     document.querySelectorAll(".ki-tab-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".ki-tab-btn").forEach((b) => b.classList.remove("active"));
@@ -330,9 +335,6 @@
       });
     });
 
-    // =========================================================
-    // ADMIN-ASSISTENT CHAT (Lädt live Produkte, Filamente & Filter)
-    // =========================================================
     const chatBox = document.getElementById("ki-chat-box");
     const chatInput = document.getElementById("ki-chat-input");
     const chatSendBtn = document.getElementById("ki-chat-send");
@@ -430,9 +432,6 @@
       chatBox.innerHTML = '<div class="ki-chat-msg bot">Verlauf gelöscht. Was möchtest du über deinen Bestand wissen?</div>';
     });
 
-    // =========================================================
-    // SCANNER & SVELTIA AUTOFILL FUNKTIONEN
-    // =========================================================
     colorPicker.addEventListener("input", () => (colorText.value = colorPicker.value));
     colorText.addEventListener("input", () => {
       if (/^#[0-9A-Fa-f]{6}$/.test(colorText.value)) colorPicker.value = colorText.value;
