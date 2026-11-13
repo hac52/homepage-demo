@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filament Manager wird geladen…</title>
+</head>
+<body>
+  <p>Filament Manager wird geladen…</p>
+  <script>
+    (async () => {
+      try {
+        const response = await fetch("../scanner.html");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        let html = await response.text();
+        html = html.replace("<head>", '<head>\n  <base href="../">');
+        html = html.replace('start_url: "./scanner.html"', 'start_url: "./admin/filament_manager.html"');
+        document.open();
+        document.write(html);
+        document.close();
+      } catch (error) {
+        document.body.textContent = "Der Filament Manager konnte nicht geladen werden.";
+        console.error(error);
+      }
+    })();
+  </script>
+</body>
+</html>
