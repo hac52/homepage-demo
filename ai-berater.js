@@ -2,7 +2,7 @@
 (() => {
   "use strict";
 
-  const API_BASE = "https://user-q8u02hdrr5.tail84cb4a.ts.net/v1";
+  const API_BASE = "https://desktop-uvddnig.tail1dcff0.ts.net/v1";
   const MODEL = "google/gemma-4-e2b";
   const MAX_INPUT_CHARS = 1200;
   const MAX_REPLY_CHARS = 4000;
