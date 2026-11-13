@@ -162,7 +162,6 @@
 <div class="container">
   <div id="global-status" class="status-banner">Lade Filament-Sortiment...</div>
 
-  <!-- EINSTELLUNGEN (GitHub Token & KI) -->
   <div id="settings-card" class="card hidden">
     <h2>⚙️ GitHub & KI-Verbindung</h2>
     <div>
@@ -179,12 +178,11 @@
     </div>
     <div>
       <label>LM Studio Tailscale-URL (für KI-Etikettenerkennung)</label>
-      <input type="text" id="cfg-ai-url" value="https://desktop-uvddnig.tail1dcff0.ts.net/v1" />
+      <input type="text" id="cfg-ai-url" value="https://ts.net" />
     </div>
     <button class="btn btn-primary" id="btn-save-settings">Einstellungen speichern</button>
   </div>
 
-  <!-- 1. BARCODE SCANNER -->
   <div class="card">
     <h2>1. Barcode oder QR-Code scannen</h2>
     <div id="reader-container">
@@ -200,12 +198,10 @@
     </div>
   </div>
 
-  <!-- 2. ERKANNTER / NEUER EINTRAG -->
   <div id="scan-result-card" class="card hidden">
     <h2 id="scan-result-title">Gescanntes Filament</h2>
     <div style="font-size:12px; color:var(--muted);">Barcode: <strong id="active-barcode-label">-</strong></div>
 
-    <!-- Fall A: Barcode bereits verknüpft -->
     <div id="existing-match-box" class="hidden" style="display:flex; flex-direction:column; gap:10px;">
       <div class="filament-item">
         <span class="color-dot" id="match-dot"></span>
@@ -220,7 +216,6 @@
       </div>
     </div>
 
-    <!-- Fall B: Unbekannter Barcode -->
     <div id="unassigned-barcode-box" class="hidden" style="display:flex; flex-direction:column; gap:12px;">
       <p style="font-size:13px; color:#fbbf24;">Dieser Barcode ist noch keinem Filament zugeordnet.</p>
       
@@ -251,7 +246,6 @@
     </div>
   </div>
 
-  <!-- 3. GESAMTES FILAMENT-LAGER -->
   <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h2>2. Aktueller Bestand (<span id="fil-count">0</span>)</h2>
@@ -272,14 +266,16 @@
   };
   document.getElementById("pwa-manifest").setAttribute(
     "href",
-"data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifestObj))
-);
-let filamente = [];
-let fileSha = null;
-let activeBarcode = "";
-let matchedIndex = -1;
-let html5QrCode = null;
-let isScanning = false;
+    "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifestObj))
+  );
+
+  let filamente = [];
+  let fileSha = null;
+  let activeBarcode = "";
+  let matchedIndex = -1;
+  let html5QrCode = null;
+  let isScanning = false;
+
 const statusBanner = document.getElementById("global-status");
 const settingsCard = document.getElementById("settings-card");
 function setStatus(msg, type = "") {
@@ -291,7 +287,7 @@ return {
 repo: localStorage.getItem("sfs_gh_repo") || "hac52/homepage-demo",
 branch: localStorage.getItem("sfs_gh_branch") || "main",
 token: localStorage.getItem("sfs_gh_token") || "",
-aiUrl: localStorage.getItem("sfs_ai_url") || "ts.net"
+aiUrl: localStorage.getItem("sfs_ai_url") || "desktop-uvddnig.tail1dcff0.ts.net/v1"
 };
 }
 function loadSettingsUI() {
@@ -341,6 +337,7 @@ const parsed = JSON.parse(base64ToUtf8(data.content));
 filamente = Array.isArray(parsed.filamente) ? parsed.filamente : [];
 } else {
 const res = await fetch("./filamente.json?t=" + Date.now());
+if (!res.ok) throw new Error("HTTP " + res.status + " beim Laden von filamente.json");
 const parsed = await res.json();
 filamente = Array.isArray(parsed.filamente) ? parsed.filamente : [];
 }
@@ -406,7 +403,7 @@ const item = filamente[index];
 if (!item) return;
 const currentStr = item.verfuegbar || "Auf Lager (1x)";
 const match = currentStr.match(/(\d+)\s*x/i);
-let qty = match ? parseInt(match, 10) : (currentStr.toLowerCase().includes("leer") ? 0 : 1);
+let qty = match ? parseInt(match[1], 10) : (currentStr.toLowerCase().includes("leer") ? 0 : 1);
 qty = Math.max(0, qty + delta);
 if (qty === 0) {
 item.verfuegbar = "Leer";
@@ -498,7 +495,7 @@ await saveFilamenteToGitHub(Neues Filament per Scanner angelegt: ${name});
 });
 document.getElementById("btn-ki-scan-label").addEventListener("click", async () => {
 const fileInput = document.getElementById("ki-label-photo");
-const file = fileInput.files?.;
+const file = fileInput.files?.[0];
 if (!file) {
 setStatus("Bitte zuerst ein Foto vom Spulen-Etikett aufnehmen/auswählen.", "err");
 return;
@@ -546,7 +543,7 @@ temperature: 0.2
 })
 });
 const data = await res.json();
-const raw = (data.choices?.?.message?.content || "").replace(/json|/g, "").trim();
+const raw = (data.choices?.[0]?.message?.content || "").replace(/json|/g, "").trim();
 const parsed = JSON.parse(raw);
 document.getElementById("new-fil-name").value = parsed.name || "";
 document.getElementById("new-fil-material").value = parsed.material || "PLA";
