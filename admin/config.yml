@@ -10,9 +10,44 @@ collections:
   - name: "shop"
     label: "3D-Druck Shop verwalten"
     files:
+      # ==========================================
+      # 1. EIGENER REITER: PRODUKTE
+      # ==========================================
       - name: "produkte"
-        label: "Produkte & Filter"
+        label: "📦 Produkte"
         file: "produkte.json"
+        fields:
+          - name: "produkte"
+            label: "Alle 3D-Druck Produkte"
+            widget: "list"
+            summary: "{{fields.titel}} ({{fields.farbe}} • {{fields.motto}})"
+            fields:
+              - { label: "Produkt-ID (ohne Leerzeichen, z.B. drache-bunt)", name: "id", widget: "string" }
+              - { label: "Produktname", name: "titel", widget: "string" }
+              - { label: "Hauptfarbe (z.B. Orange, Blau, Bunt)", name: "farbe", widget: "string" }
+              - { label: "Motto / Kategorie (z.B. Weihnachten, Deko)", name: "motto", widget: "string" }
+              - name: "eigenschaften"
+                label: "🏷️ Zusätzliche Filter-Werte zuweisen"
+                widget: "list"
+                required: false
+                summary: "{{fields.kategorie}}: {{fields.wert}}"
+                fields:
+                  - { label: "Filter-Kategorie (exakt wie angelegt, z.B. Material)", name: "kategorie", widget: "string" }
+                  - { label: "Zugewiesener Wert (z.B. PLA)", name: "wert", widget: "string" }
+              - { label: "Produktfoto", name: "bild", widget: "image" }
+              - { label: "Kurzbeschreibung (Startseite, max. 5 Zeilen)", name: "kurzbeschreibung", widget: "text" }
+              - { label: "Ausführliche Beschreibung (Detailseite)", name: "beschreibung", widget: "text" }
+              - { label: "Maße (z.B. Höhe: 20 cm)", name: "masse", widget: "string", required: false }
+              - { label: "Material / Filament (Text für Detailseite)", name: "material", widget: "string", default: "PLA" }
+              - { label: "Shopify-Link", name: "shopify", widget: "string", default: "#" }
+              - { label: "Etsy-Link", name: "etsy", widget: "string", default: "#" }
+
+      # ==========================================
+      # 2. EIGENER REITER: FILTER
+      # ==========================================
+      - name: "filter"
+        label: "🏷️ Filter"
+        file: "filter.json"
         fields:
           - name: "farben"
             label: "🎨 Verfügbare Farben (Standard-Filter)"
@@ -36,36 +71,16 @@ collections:
                 widget: "list"
                 allow_add: true
                 field: { label: "Wert", name: "wert", widget: "string" }
-          - name: "produkte"
-            label: "📦 Alle 3D-Druck Produkte"
-            widget: "list"
-            summary: "{{fields.titel}} ({{fields.farbe}} • {{fields.motto}})"
-            fields:
-              - { label: "Produkt-ID (ohne Leerzeichen, z.B. drache-bunt)", name: "id", widget: "string" }
-              - { label: "Produktname", name: "titel", widget: "string" }
-              - { label: "Hauptfarbe (z.B. Orange, Blau, Bunt)", name: "farbe", widget: "string" }
-              - { label: "Motto / Kategorie (z.B. Weihnachten, Deko)", name: "motto", widget: "string" }
-              - name: "eigenschaften"
-                label: "🏷️ Zusätzliche Filter-Werte zuweisen"
-                widget: "list"
-                required: false
-                summary: "{{fields.kategorie}}: {{fields.wert}}"
-                fields:
-                  - { label: "Filter-Kategorie (exakt wie oben angelegt, z.B. Material)", name: "kategorie", widget: "string" }
-                  - { label: "Zugewiesener Wert (z.B. PLA)", name: "wert", widget: "string" }
-              - { label: "Produktfoto", name: "bild", widget: "image" }
-              - { label: "Kurzbeschreibung (Startseite, max. 5 Zeilen)", name: "kurzbeschreibung", widget: "text" }
-              - { label: "Ausführliche Beschreibung (Detailseite)", name: "beschreibung", widget: "text" }
-              - { label: "Maße (z.B. Höhe: 20 cm)", name: "masse", widget: "string", required: false }
-              - { label: "Material / Filament (Text für Detailseite)", name: "material", widget: "string", default: "PLA" }
-              - { label: "Shopify-Link", name: "shopify", widget: "string", default: "#" }
-              - { label: "Etsy-Link", name: "etsy", widget: "string", default: "#" }
 
-          # ========================================================
-          # NEU: SEPARATES FELD FÜR DEIN FILAMENT-SORTIMENT
-          # ========================================================
+      # ==========================================
+      # 3. EIGENER REITER: FILAMENT-SORTIMENT
+      # ==========================================
+      - name: "filamente"
+        label: "🧵 Filament-Sortiment"
+        file: "filamente.json"
+        fields:
           - name: "filamente"
-            label: "🧵 Filament-Sortiment"
+            label: "Vorhandene Filamente & Farben"
             widget: "list"
             allow_add: true
             summary: "{{fields.name}} ({{fields.material}} • {{fields.verfuegbar}})"
