@@ -25,9 +25,9 @@
       position: fixed;
       bottom: 72px;
       left: 20px;
-      width: 390px;
+      width: 400px;
       max-width: calc(100vw - 40px);
-      max-height: 82vh;
+      max-height: 85vh;
       overflow-y: auto;
       background: #1f2937;
       color: #f9fafb;
@@ -42,6 +42,34 @@
       gap: 8px;
     }
     #ki-scanner-panel.open { display: flex; }
+    .ki-tabs {
+      display: flex;
+      gap: 6px;
+      background: #111827;
+      padding: 4px;
+      border-radius: 8px;
+    }
+    .ki-tab-btn {
+      flex: 1;
+      background: transparent;
+      color: #9ca3af;
+      border: none;
+      padding: 7px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .ki-tab-btn.active {
+      background: #374151;
+      color: #ffffff;
+    }
+    .ki-section {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ki-section.active { display: flex; }
     .ki-label { font-size: 11px; color: #9ca3af; margin-bottom: -4px; }
     .ki-field-row { display: flex; gap: 6px; align-items: center; }
     .ki-field-row input, .ki-field-row textarea {
@@ -69,66 +97,120 @@
 <body>
   <script src="./sveltia-cms.js"></script>
 
-  <button id="ki-scanner-btn" type="button">✨ KI-Produkt-Scanner</button>
+  <!-- Schwebender Button -->
+  <button id="ki-scanner-btn" type="button">✨ KI-Admin-Assistent</button>
 
+  <!-- KI-Panel -->
   <div id="ki-scanner-panel">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <strong>3D-Druck per Foto erkennen</strong>
+      <strong>✨ KI-Admin-Assistent</strong>
       <button id="ki-scanner-close" type="button" style="background:none;border:none;color:#9ca3af;font-size:16px;cursor:pointer;">✕</button>
     </div>
 
-    <input type="file" id="ki-image-input" accept="image/*" style="font-size:13px;">
-    <img id="ki-preview" src="" alt="Vorschau" style="max-height:130px; object-fit:contain; display:none; border-radius:6px; background:#111827;">
+    <!-- Modus-Umschalter -->
+    <div class="ki-tabs">
+      <button type="button" class="ki-tab-btn active" data-tab="tab-produkt">📦 Produkt</button>
+      <button type="button" class="ki-tab-btn" data-tab="tab-filament">🧵 Filament</button>
+    </div>
 
-    <button id="ki-run-btn" type="button" style="background:#10b981; color:#fff; border:none; padding:8px; border-radius:6px; font-weight:600; cursor:pointer;">
-      Foto analysieren
+    <!-- Gemeinsame Eingabe: Bild &/oder Text -->
+    <span class="ki-label">Foto hochladen (optional bei Texteingabe)</span>
+    <input type="file" id="ki-image-input" accept="image/*" style="font-size:13px;">
+    <img id="ki-preview" src="" alt="Vorschau" style="max-height:110px; object-fit:contain; display:none; border-radius:6px; background:#111827;">
+
+    <span class="ki-label">Zusatz-Info / Texteingabe (z. B. "Bambu PLA Seide Gold, wenig Bestand")</span>
+    <textarea id="ki-text-prompt" rows="2" placeholder="Optional: Infos zu Farbe, Material, Status oder Besonderheiten eintippen..."></textarea>
+
+    <button id="ki-run-btn" type="button" style="background:#10b981; color:#fff; border:none; padding:9px; border-radius:6px; font-weight:600; cursor:pointer;">
+      Mit KI analysieren
     </button>
     <div id="ki-status" style="font-size:12px; color:#d1d5db;"></div>
 
-    <span class="ki-label">Produkt-ID (ohne Leerzeichen)</span>
-    <div class="ki-field-row">
-      <input type="text" id="ki-out-id" placeholder="z. B. drache-bunt">
-      <button type="button" class="ki-copy-btn" data-target="ki-out-id">Kopieren</button>
+    <!-- ========================================== -->
+    <!-- BEREICH 1: PRODUKT-FELDER                  -->
+    <!-- ========================================== -->
+    <div id="tab-produkt" class="ki-section active">
+      <span class="ki-label">Produkt-ID</span>
+      <div class="ki-field-row">
+        <input type="text" id="ki-out-id" placeholder="z. B. drache-bunt">
+        <button type="button" class="ki-copy-btn" data-target="ki-out-id">Kopieren</button>
+      </div>
+
+      <span class="ki-label">Produktname (titel)</span>
+      <div class="ki-field-row">
+        <input type="text" id="ki-out-titel" placeholder="Produktname">
+        <button type="button" class="ki-copy-btn" data-target="ki-out-titel">Kopieren</button>
+      </div>
+
+      <span class="ki-label">Hauptfarbe (farbe)</span>
+      <div class="ki-field-row">
+        <input type="text" id="ki-out-farbe" placeholder="z. B. Orange, Blau, Bunt">
+        <button type="button" class="ki-copy-btn" data-target="ki-out-farbe">Kopieren</button>
+      </div>
+
+      <span class="ki-label">Motto / Kategorie (motto)</span>
+      <div class="ki-field-row">
+        <input type="text" id="ki-out-motto" placeholder="z. B. Deko, Weihnachten">
+        <button type="button" class="ki-copy-btn" data-target="ki-out-motto">Kopieren</button>
+      </div>
+
+      <span class="ki-label">Kurzbeschreibung</span>
+      <div class="ki-field-row">
+        <textarea id="ki-out-kurz" rows="2" placeholder="Max. 2-3 Sätze"></textarea>
+        <button type="button" class="ki-copy-btn" data-target="ki-out-kurz">Kopieren</button>
+      </div>
+
+      <span class="ki-label">Ausführliche Beschreibung</span>
+      <div class="ki-field-row">
+        <textarea id="ki-out-beschreibung" rows="3" placeholder="Detailbeschreibung"></textarea>
+        <button type="button" class="ki-copy-btn" data-target="ki-out-beschreibung">Kopieren</button>
+      </div>
+
+      <span class="ki-label">Material / Filament</span>
+      <div class="ki-field-row">
+        <input type="text" id="ki-out-material" placeholder="PLA">
+        <button type="button" class="ki-copy-btn" data-target="ki-out-material">Kopieren</button>
+      </div>
     </div>
 
-    <span class="ki-label">Produktname (titel)</span>
-    <div class="ki-field-row">
-      <input type="text" id="ki-out-titel" placeholder="Produktname">
-      <button type="button" class="ki-copy-btn" data-target="ki-out-titel">Kopieren</button>
-    </div>
+    <!-- ========================================== -->
+    <!-- BEREICH 2: FILAMENT-FELDER                 -->
+    <!-- ========================================== -->
+    <div id="tab-filament" class="ki-section">
+      <span class="ki-label">Filament-Name / Farbe</span>
+      <div class="ki-field-row">
+        <input type="text" id="ki-fil-name" placeholder="z. B. Matt Schwarz, Seide Gold">
+        <button type="button" class="ki-copy-btn" data-target="ki-fil-name">Kopieren</button>
+      </div>
 
-    <span class="ki-label">Hauptfarbe (farbe)</span>
-    <div class="ki-field-row">
-      <input type="text" id="ki-out-farbe" placeholder="z. B. Orange, Blau, Bunt">
-      <button type="button" class="ki-copy-btn" data-target="ki-out-farbe">Kopieren</button>
-    </div>
+      <span class="ki-label">Material-Typ</span>
+      <div class="ki-field-row">
+        <input type="text" id="ki-fil-material" placeholder="z. B. PLA, PETG, TPU">
+        <button type="button" class="ki-copy-btn" data-target="ki-fil-material">Kopieren</button>
+      </div>
 
-    <span class="ki-label">Motto / Kategorie (motto)</span>
-    <div class="ki-field-row">
-      <input type="text" id="ki-out-motto" placeholder="z. B. Deko, Weihnachten">
-      <button type="button" class="ki-copy-btn" data-target="ki-out-motto">Kopieren</button>
-    </div>
+      <span class="ki-label">Farb-Code (Hex)</span>
+      <div class="ki-field-row">
+        <input type="color" id="ki-fil-colorpicker" value="#111827" style="width:36px; height:30px; padding:0; border:none; background:none; cursor:pointer;">
+        <input type="text" id="ki-fil-farbcode" placeholder="#111827">
+        <button type="button" class="ki-copy-btn" data-target="ki-fil-farbcode">Kopieren</button>
+      </div>
 
-    <span class="ki-label">Kurzbeschreibung (Startseite)</span>
-    <div class="ki-field-row">
-      <textarea id="ki-out-kurz" rows="2" placeholder="Max. 2-3 Sätze für die Startseite"></textarea>
-      <button type="button" class="ki-copy-btn" data-target="ki-out-kurz">Kopieren</button>
-    </div>
+      <span class="ki-label">Status (Auf Lager / Wenig Bestand / Leer)</span>
+      <div class="ki-field-row">
+        <input type="text" id="ki-fil-status" placeholder="Auf Lager">
+        <button type="button" class="ki-copy-btn" data-target="ki-fil-status">Kopieren</button>
+      </div>
 
-    <span class="ki-label">Ausführliche Beschreibung (Detailseite)</span>
-    <div class="ki-field-row">
-      <textarea id="ki-out-beschreibung" rows="3" placeholder="Ausführliche Produktbeschreibung"></textarea>
-      <button type="button" class="ki-copy-btn" data-target="ki-out-beschreibung">Kopieren</button>
-    </div>
-
-    <span class="ki-label">Material / Filament</span>
-    <div class="ki-field-row">
-      <input type="text" id="ki-out-material" placeholder="PLA">
-      <button type="button" class="ki-copy-btn" data-target="ki-out-material">Kopieren</button>
+      <span class="ki-label">Notiz / Besonderheit</span>
+      <div class="ki-field-row">
+        <input type="text" id="ki-fil-notiz" placeholder="z. B. Glänzend, Wetterfest">
+        <button type="button" class="ki-copy-btn" data-target="ki-fil-notiz">Kopieren</button>
+      </div>
     </div>
 
     <button id="ki-autofill-btn" type="button" style="background:#4f46e5; color:#fff; border:none; padding:9px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; margin-top:4px;">
-      In offenes Sveltia-Produkt übertragen
+      In offenes Sveltia-Formular übertragen
     </button>
   </div>
 
@@ -141,15 +223,38 @@
     const closeBtn = document.getElementById("ki-scanner-close");
     const fileInput = document.getElementById("ki-image-input");
     const preview = document.getElementById("ki-preview");
+    const textPromptInput = document.getElementById("ki-text-prompt");
     const runBtn = document.getElementById("ki-run-btn");
     const statusEl = document.getElementById("ki-status");
     const autofillBtn = document.getElementById("ki-autofill-btn");
+    const colorPicker = document.getElementById("ki-fil-colorpicker");
+    const colorText = document.getElementById("ki-fil-farbcode");
 
     let base64Image = "";
+    let activeMode = "tab-produkt";
 
     openBtn.addEventListener("click", () => panel.classList.toggle("open"));
     closeBtn.addEventListener("click", () => panel.classList.remove("open"));
 
+    // Tab-Wechsel (Produkt vs. Filament)
+    document.querySelectorAll(".ki-tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".ki-tab-btn").forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".ki-section").forEach((s) => s.classList.remove("active"));
+        btn.classList.add("active");
+        activeMode = btn.dataset.tab;
+        document.getElementById(activeMode).classList.add("active");
+        statusEl.textContent = "";
+      });
+    });
+
+    // Farb-Picker synchronisieren
+    colorPicker.addEventListener("input", () => (colorText.value = colorPicker.value));
+    colorText.addEventListener("input", () => {
+      if (/^#[0-9A-Fa-f]{6}$/.test(colorText.value)) colorPicker.value = colorText.value;
+    });
+
+    // Kopier-Buttons
     document.querySelectorAll(".ki-copy-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const el = document.getElementById(btn.dataset.target);
@@ -160,6 +265,7 @@
       });
     });
 
+    // Bild verkleinern & Base64 erzeugen
     fileInput.addEventListener("change", (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -181,13 +287,32 @@
       reader.readAsDataURL(file);
     });
 
+    // KI-Analyse starten (unterstützt Bild, Text oder beides gleichzeitig)
     runBtn.addEventListener("click", async () => {
-      if (!base64Image) {
-        statusEl.textContent = "Bitte zuerst ein Produktfoto auswählen.";
+      const userNote = textPromptInput.value.trim();
+
+      if (!base64Image && !userNote) {
+        statusEl.textContent = "Bitte ein Foto hochladen oder eine Text-Notiz eingeben.";
         return;
       }
-      statusEl.textContent = "Gemma-4 analysiert den 3D-Druck...";
+
+      statusEl.textContent = "Gemma-4 verarbeitet deine Eingabe...";
       runBtn.disabled = true;
+
+      const isFilament = activeMode === "tab-filament";
+
+      const systemPrompt = isFilament
+        ? 'Du bist Material-Verwalter eines 3D-Druck-Shops. Analysiere das Foto (z. B. Filament-Spule oder Etikett) und/oder den Text des Nutzers. Antworte AUSSCHLIESSLICH mit einem gültigen JSON-Objekt ohne Markdown in diesem Format: {"name":"Farbname z.B. Matt Schwarz","material":"PLA oder PETG oder TPU","farbcode":"#HexFarbwert","verfuegbar":"Auf Lager oder Wenig Bestand oder Leer","notiz":"kurze Besonderheit oder leer"}'
+        : 'Du bist Produktmanager für "Schicht für Schicht 3D Drucke". Analysiere das Foto und/oder die Text-Notiz des Nutzers. Antworte AUSSCHLIESSLICH mit einem gültigen JSON-Objekt ohne Markdown in diesem Format: {"id":"kleinbuchstaben-mit-bindestrich","titel":"...","farbe":"...","motto":"...","kurzbeschreibung":"...","beschreibung":"...","material":"PLA"}';
+
+      const taskInstruction = isFilament
+        ? `Erkenne das 3D-Druck-Filament anhand von Bild und/oder Text. Zusatz-Info vom Nutzer: "${userNote || "keine"}".`
+        : `Erstelle Produktdaten (id ohne Umlaute/Leerzeichen, titel, farbe, motto, kurzbeschreibung, beschreibung, material). Zusatz-Info vom Nutzer: "${userNote || "keine"}".`;
+
+      const userContent = [{ type: "text", text: taskInstruction }];
+      if (base64Image) {
+        userContent.push({ type: "image_url", image_url: { url: base64Image } });
+      }
 
       try {
         const res = await fetch(`${LM_STUDIO_BASE_URL}/chat/completions`, {
@@ -196,21 +321,8 @@
           body: JSON.stringify({
             model: MODEL_NAME,
             messages: [
-              {
-                role: "system",
-                content:
-                  'Du bist Produktmanager für einen 3D-Druck-Shop ("Schicht für Schicht 3D Drucke"). Analysiere das Foto und antworte AUSSCHLIESSLICH mit einem gültigen JSON-Objekt ohne Markdown-Formatierung in exakt diesem Schema: {"id":"kleinbuchstaben-mit-bindestrich","titel":"...","farbe":"...","motto":"...","kurzbeschreibung":"...","beschreibung":"...","material":"PLA"}'
-              },
-              {
-                role: "user",
-                content: [
-                  {
-                    type: "text",
-                    text: "Erstelle anhand des Fotos: 1. id (kleingeschrieben ohne Leerzeichen/Umlaute, z. B. drache-bunt), 2. titel (deutscher Produktname), 3. farbe (Hauptfarbe auf Deutsch, z. B. Schwarz, Weiß, Orange, Bunt), 4. motto (Kategorie wie Deko, Praktisches, Weihnachten, Ostern, Gaming), 5. kurzbeschreibung (knackige 2 Sätze für die Startseite), 6. beschreibung (ausführliche Beschreibung für die Detailseite mit Vorteilen des 3D-Drucks), 7. material (Standard PLA)."
-                  },
-                  { type: "image_url", image_url: { url: base64Image } }
-                ]
-              }
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userContent }
             ],
             temperature: 0.3
           })
@@ -220,23 +332,33 @@
         const raw = (data.choices?.[0]?.message?.content || "").replace(/```json|```/g, "").trim();
         const parsed = JSON.parse(raw);
 
-        document.getElementById("ki-out-id").value = parsed.id || "";
-        document.getElementById("ki-out-titel").value = parsed.titel || "";
-        document.getElementById("ki-out-farbe").value = parsed.farbe || "";
-        document.getElementById("ki-out-motto").value = parsed.motto || "";
-        document.getElementById("ki-out-kurz").value = parsed.kurzbeschreibung || "";
-        document.getElementById("ki-out-beschreibung").value = parsed.beschreibung || "";
-        document.getElementById("ki-out-material").value = parsed.material || "PLA";
+        if (isFilament) {
+          document.getElementById("ki-fil-name").value = parsed.name || "";
+          document.getElementById("ki-fil-material").value = parsed.material || "PLA";
+          document.getElementById("ki-fil-farbcode").value = parsed.farbcode || "#111827";
+          if (/^#[0-9A-Fa-f]{6}$/.test(parsed.farbcode)) colorPicker.value = parsed.farbcode;
+          document.getElementById("ki-fil-status").value = parsed.verfuegbar || "Auf Lager";
+          document.getElementById("ki-fil-notiz").value = parsed.notiz || "";
+        } else {
+          document.getElementById("ki-out-id").value = parsed.id || "";
+          document.getElementById("ki-out-titel").value = parsed.titel || "";
+          document.getElementById("ki-out-farbe").value = parsed.farbe || "";
+          document.getElementById("ki-out-motto").value = parsed.motto || "";
+          document.getElementById("ki-out-kurz").value = parsed.kurzbeschreibung || "";
+          document.getElementById("ki-out-beschreibung").value = parsed.beschreibung || "";
+          document.getElementById("ki-out-material").value = parsed.material || "PLA";
+        }
 
-        statusEl.textContent = "Analyse fertig! Jetzt unten auf Übertragen klicken.";
+        statusEl.textContent = "Fertig! Jetzt prüfen oder direkt übertragen.";
       } catch (err) {
         console.error(err);
-        statusEl.textContent = "Fehler bei der Analyse. Prüfe, ob das Modell in LM Studio geladen ist.";
+        statusEl.textContent = "Fehler bei der KI-Analyse. Prüfe LM Studio & Tailscale.";
       } finally {
         runBtn.disabled = false;
       }
     });
 
+    // Shadow DOM & Sveltia-Formular Helfer
     function getAllDeepInputs(root = document) {
       let results = [];
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
@@ -282,16 +404,26 @@
       el.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
     }
 
+    // Überträgt die Daten je nach aktivem Tab in das offene Sveltia-Formular
     autofillBtn.addEventListener("click", () => {
-      const mapping = [
-        { labelMatch: "produkt-id", value: document.getElementById("ki-out-id").value },
-        { labelMatch: "produktname", value: document.getElementById("ki-out-titel").value },
-        { labelMatch: "hauptfarbe", value: document.getElementById("ki-out-farbe").value },
-        { labelMatch: "motto / kategorie", value: document.getElementById("ki-out-motto").value },
-        { labelMatch: "kurzbeschreibung", value: document.getElementById("ki-out-kurz").value },
-        { labelMatch: "ausführliche beschreibung", value: document.getElementById("ki-out-beschreibung").value },
-        { labelMatch: "material / filament", value: document.getElementById("ki-out-material").value }
-      ];
+      const mapping =
+        activeMode === "tab-filament"
+          ? [
+              { labelMatch: "filament-name", value: document.getElementById("ki-fil-name").value },
+              { labelMatch: "material-typ", value: document.getElementById("ki-fil-material").value },
+              { labelMatch: "farb-code", value: document.getElementById("ki-fil-farbcode").value },
+              { labelMatch: "status", value: document.getElementById("ki-fil-status").value },
+              { labelMatch: "notiz", value: document.getElementById("ki-fil-notiz").value }
+            ]
+          : [
+              { labelMatch: "produkt-id", value: document.getElementById("ki-out-id").value },
+              { labelMatch: "produktname", value: document.getElementById("ki-out-titel").value },
+              { labelMatch: "hauptfarbe", value: document.getElementById("ki-out-farbe").value },
+              { labelMatch: "motto / kategorie", value: document.getElementById("ki-out-motto").value },
+              { labelMatch: "kurzbeschreibung", value: document.getElementById("ki-out-kurz").value },
+              { labelMatch: "ausführliche beschreibung", value: document.getElementById("ki-out-beschreibung").value },
+              { labelMatch: "material / filament", value: document.getElementById("ki-out-material").value }
+            ];
 
       const allFields = getAllDeepInputs(document);
       let filledCount = 0;
@@ -309,7 +441,7 @@
       statusEl.textContent =
         filledCount > 0
           ? `${filledCount} Felder in Sveltia CMS ausgefüllt!`
-          : "Keine offenen Felder gefunden – bitte zuerst in Sveltia ein Produkt aufklappen.";
+          : "Keine offenen Felder gefunden – bitte zuerst den Eintrag in Sveltia aufklappen.";
     });
   </script>
 </body>
