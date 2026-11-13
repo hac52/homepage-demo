@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Filament Scanner – Schicht für Schicht 3D</title>
   <link rel="manifest" id="pwa-manifest" />
-  <script src="https://unpkg.com"></script>
+  <script src="./sveltia-cms.js"></script>
   <style>
     :root {
       --bg: #0f172a;
@@ -178,7 +178,7 @@
     </div>
     <div>
       <label>LM Studio Tailscale-URL (für KI-Etikettenerkennung)</label>
-      <input type="text" id="cfg-ai-url" value="https://ts.net" />
+      <input type="text" id="cfg-ai-url" value="https://desktop-uvddnig.tail1dcff0.ts.net/v1" />
     </div>
     <button class="btn btn-primary" id="btn-save-settings">Einstellungen speichern</button>
   </div>
@@ -324,7 +324,7 @@ const cfg = getConfig();
 setStatus("Lade filamente.json...");
 try {
 if (cfg.token) {
-const res = await fetch(https://github.com{cfg.repo}/contents/filamente.json?ref=${cfg.branch}&t=${Date.now()}, {
+const res = await fetch(https://github.com{cfg.repo}/filamente.json?ref=${cfg.branch}&t=${Date.now()}, {
 headers: {
 Authorization: Bearer ${cfg.token},
 Accept: "application/vnd.github+json"
@@ -358,7 +358,7 @@ return false;
 setStatus("Speichere Änderung auf GitHub...");
 try {
 if (!fileSha) {
-const check = await fetch(https://github.com{cfg.repo}/contents/filamente.json?ref=${cfg.branch}, {
+const check = await fetch(https://github.com{cfg.repo}/filamente.json?ref=${cfg.branch}, {
 headers: { Authorization: Bearer ${cfg.token} }
 });
 if (check.ok) {
@@ -367,7 +367,7 @@ fileSha = d.sha;
 }
 }
 const jsonContent = JSON.stringify({ filamente }, null, 2);
-const res = await fetch(https://github.com{cfg.repo}/contents/filamente.json, {
+const res = await fetch(https://github.com{cfg.repo}/filamente.json, {
 method: "PUT",
 headers: {
 Authorization: Bearer ${cfg.token},
