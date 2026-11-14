@@ -414,17 +414,17 @@
                 <button class="modal-close" onclick="closeModal('datenschutzModal')">✕</button>
             </div>
             <p><strong>1. Datenschutz auf einen Blick</strong><br>
-            Diese Website dient als Online-Katalog für unsere 3D-Druck-Produkte. Der eigentliche Kaufabschluss findet erst nach Weiterleitung auf den externen Plattformen Shopify oder Etsy statt.</p><br>
+            Diese Website dient als Online-Katalog für unsere 3D-Druck-Produkte. Der eigentliche Kaufabschluss findet erst nach Weiterleitung auf den externen Plattformen Shopify oder Etsy statt.</p>[...]
             <p><strong>2. Verantwortliche Stelle</strong><br>
-            <span class="placeholder">[VORNAME NACHNAME]</span>, <span class="placeholder">[STRASSE UND HAUSNUMMER]</span>, <span class="placeholder">[PLZ]</span> Stuttgart, E-Mail: <span class="placeholder">[E-MAIL-ADRESSE]</span></p><br>
+            <span class="placeholder">[VORNAME NACHNAME]</span>, <span class="placeholder">[STRASSE UND HAUSNUMMER]</span>, <span class="placeholder">[PLZ]</span> Stuttgart, E-Mail: <span class="place[...]
             <p><strong>3. Hosting (Netlify & GitHub)</strong><br>
-            Diese Website wird über Netlify (Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seiten erfasst der Hostinganbieter automatisch Server-Logs wie IP-Adresse, Browserdaten und Zugriffszeitpunkte.</p><br>
+            Diese Website wird über Netlify (Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der Seiten erfasst der Hostinganbieter automatisch Ser[...]
             <p><strong>4. Lokale Speicherung (Dark/White Mode)</strong><br>
-            Für die Speicherung Ihrer gewählten Farbansicht (Dark Mode / White Mode) nutzt diese Seite den lokalen Speicher Ihres Browsers (LocalStorage). Es werden keine Tracking-Cookies eingesetzt.</p><br>
+            Für die Speicherung Ihrer gewählten Farbansicht (Dark Mode / White Mode) nutzt diese Seite den lokalen Speicher Ihres Browsers (LocalStorage). Es werden keine Tracking-Cookies eingesetzt[...]
             <p><strong>5. Externe Links zu Shopify und Etsy</strong><br>
-            Beim Klick auf einen Kauf-Button verlassen Sie unsere Website und werden zu unserem Shop auf Shopify (<span class="placeholder">[LINK ZU DEINEM SHOPIFY-SHOP]</span>) oder Etsy (<span class="placeholder">[LINK ZU DEINEM ETSY-SHOP]</span>) weitergeleitet. Dort gelten die Datenschutzbestimmungen dieser Plattformen.</p><br>
+            Beim Klick auf einen Kauf-Button verlassen Sie unsere Website und werden zu unserem Shop auf Shopify (<span class="placeholder">[LINK ZU DEINEM SHOPIFY-SHOP]</span>) oder Etsy (<span class[...]
             <p><strong>6. Ihre Rechte</strong><br>
-            Sie haben jederzeit das Recht auf unentgeltliche Auskunft, Berichtigung, Sperrung oder Löschung Ihrer gespeicherten personenbezogenen Daten sowie ein Beschwerderecht bei der zuständigen Datenschutzbehörde.</p>
+            Sie haben jederzeit das Recht auf unentgeltliche Auskunft, Berichtigung, Sperrung oder Löschung Ihrer gespeicherten personenbezogenen Daten sowie ein Beschwerderecht bei der zuständigen [...]
         </div>
     </div>
 
@@ -551,7 +551,6 @@
         async function loadProducts() {
             const grid = document.getElementById('productGrid');
             try {
-                // Lädt Produkte und Filter gleichzeitig aus den getrennten JSON-Dateien
                 const [prodRes, filterRes] = await Promise.all([
                     fetch('./produkte.json?t=' + Date.now()),
                     fetch('./filter.json?t=' + Date.now())
@@ -620,7 +619,6 @@
                 filterSection.appendChild(select);
             });
         }
-
 
         function renderProducts(list) {
             const grid = document.getElementById('productGrid');
@@ -771,6 +769,8 @@
 
         loadProducts();
     </script>
+    <script src="homepage-katalog.js"></script>
+    <script src="warenkorb-empfehlungen.js"></script>
     <script src="ai-berater.js"></script>
 </body>
 </html>
