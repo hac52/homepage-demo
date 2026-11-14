@@ -1,16 +1,12 @@
-/* Homepage catalog presentation: monthly offers first, then products by category. */
+/* Optional monthly-offer presentation. Keeps the original product grid and filters intact. */
 (() => {
   "use strict";
 
-  const categoriesFor = (product) => {
-    const source = product?.kategorie || product?.motto || "Weitere Produkte";
-    return [...new Set(String(source).split(/[,;|]/).map((value) => value.trim()).filter(Boolean))];
-  };
   const money = (value) => `${Number(value).toFixed(2).replace(".", ",")} €`;
 
-  function makeProductCard(product) {
+  function makeOfferCard(product) {
     const card = document.createElement("article");
-    card.className = "product-card";
+    card.className = "product-card offer-card";
     card.tabIndex = 0;
     card.setAttribute("role", "button");
     card.setAttribute("aria-label", `Details zu ${product.titel || "Produkt"} öffnen`);
@@ -73,129 +69,59 @@
     return card;
   }
 
-  function init() {
+  async function init() {
     const overview = document.getElementById("overviewSection");
     const container = overview?.querySelector(".container");
     const filterBar = document.getElementById("filterBar");
-    const grid = document.getElementById("productGrid");
-    if (!container || !filterBar || !grid || typeof window.renderProducts !== "function") return;
+    if (!container || !filterBar) return;
 
-    const styles = document.createElement("style");
-    styles.textContent = `
+    const style = document.createElement("style");
+    style.textContent = `
       .monthly-offers { margin: 1.5rem auto 2rem; padding: 1.5rem; border-radius: 24px; background: var(--card-bg); border: 2px solid var(--accent); box-shadow: var(--shadow); }
-      .monthly-offers h2, .category-section h2 { margin-bottom: .35rem; }
-      .section-intro { color: var(--text-muted); margin-bottom: 1rem; }
+      .monthly-offers h2 { margin-bottom: .35rem; }
+      .monthly-offers-intro { color: var(--text-muted); margin-bottom: 1rem; }
       .offer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
       .offer-badge { align-self: flex-start; background: var(--primary); color: #fff; padding: .3rem .8rem; border-radius: 999px; font-size: .82rem; font-weight: 800; margin-bottom: .7rem; }
       .offer-prices { display: flex; align-items: baseline; gap: .75rem; margin-bottom: 1rem; }
       .offer-prices s { color: var(--text-muted); }
       .offer-prices strong { color: var(--primary); font-size: 1.35rem; }
       .offer-empty { padding: 1rem; background: rgba(254, 228, 64, .12); border-radius: 14px; color: var(--text-muted); }
-      .category-section { margin: 2rem auto 1rem; }
-      .category-buttons { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1rem; }
-      .category-button { border: 1px solid var(--border-color); border-radius: 999px; padding: .65rem 1rem; background: var(--card-bg); color: var(--text-color); font: inherit; font-weight: 700; cursor: pointer; }
-      .category-button:hover, .category-button[aria-pressed="true"] { background: var(--purple); border-color: var(--purple); color: #fff; }
-      #catalogPrompt { text-align: center; padding: 2rem; color: var(--text-muted); background: var(--card-bg); border-radius: 18px; box-shadow: var(--shadow); }
-      #filterBar[hidden], #productGrid[hidden] { display: none; }
       @media (max-width: 600px) { .monthly-offers { padding: 1rem; } }
     `;
-    document.head.appendChild(styles);
+    document.head.appendChild(style);
 
-    const offers = document.createElement("section");
-    offers.className = "monthly-offers";
-    offers.setAttribute("aria-labelledby", "monthlyOffersTitle");
-    offers.innerHTML = '<h2 id="monthlyOffersTitle">⭐ Angebot des Monats</h2><p class="section-intro">Besondere Produkte zum reduzierten Preis.</p><div class="offer-grid" id="monthlyOfferGrid"></div>';
-    container.insertBefore(offers, filterBar);
+    const section = document.createElement("section");
+    section.className = "monthly-offers";
+    section.setAttribute("aria-labelledby", "monthlyOffersTitle");
+    section.innerHTML = '<h2 id="monthlyOffersTitle">⭐ Angebot des Monats</h2><p class="monthly-offers-intro">Besondere Produkte zum reduzierten Preis.</p><div class="offer-grid" id="monthlyOfferGrid"></div>';
+    container.insertBefore(section, filterBar);
 
-    const categorySection = document.createElement("section");
-    categorySection.className = "category-section";
-    categorySection.setAttribute("aria-labelledby", "categoryTitle");
-    categorySection.innerHTML = '<h2 id="categoryTitle">Entdecke unsere Kategorien</h2><p class="section-intro">Wähle eine Kategorie aus, um die passenden Produkte zu entdecken.</p><div class="category-buttons" id="categoryButtons"></div>';
-    container.insertBefore(categorySection, filterBar);
-
-    const prompt = document.createElement("p");
-    prompt.id = "catalogPrompt";
-    prompt.textContent = "Wähle oben eine Kategorie aus – dann werden die Produkte angezeigt.";
-    grid.before(prompt);
-    filterBar.hidden = true;
-    grid.hidden = true;
-
-    let selectedCategory = null;
-    let products = [];
-    const originalRender = window.renderProducts;
-
-    function updateOffers() {
-      const offerGrid = document.getElementById("monthlyOfferGrid");
-      const activeOffers = products.filter((product) => product.angebot === true
+    try {
+      const response = await fetch(`./produkte.json?t=${Date.now()}`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`produkte.json HTTP-Status ${response.status}`);
+      const data = await response.json();
+      const products = Array.isArray(data.produkte) ? data.produkte : [];
+      const offers = products.filter((product) => product.angebot === true
         && Number.isFinite(Number(product.preis))
         && Number.isFinite(Number(product.angebotspreis))
         && Number(product.angebotspreis) > 0
         && Number(product.angebotspreis) < Number(product.preis));
-      offerGrid.replaceChildren();
-      if (!activeOffers.length) {
+      const offerGrid = section.querySelector(".offer-grid");
+      if (offers.length) {
+        offers.forEach((product) => offerGrid.appendChild(makeOfferCard(product)));
+      } else {
         const empty = document.createElement("p");
         empty.className = "offer-empty";
         empty.textContent = "Hier erscheinen deine Monatsangebote, sobald du sie festgelegt hast. Lege dafür beim Produkt „angebot: true“ und einen reduzierten „angebotspreis“ fest.";
         offerGrid.appendChild(empty);
-        return;
       }
-      activeOffers.forEach((product) => offerGrid.appendChild(makeProductCard(product)));
+    } catch (error) {
+      console.warn("Monatsangebote konnten nicht geladen werden.", error);
+      const empty = document.createElement("p");
+      empty.className = "offer-empty";
+      empty.textContent = "Monatsangebote sind gerade nicht verfügbar.";
+      section.querySelector(".offer-grid").appendChild(empty);
     }
-
-    function updateCategories() {
-      const buttonBox = document.getElementById("categoryButtons");
-      const categories = [...new Set(products.flatMap(categoriesFor))].sort((a, b) => a.localeCompare(b, "de"));
-      buttonBox.replaceChildren();
-      categories.forEach((category) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "category-button";
-        button.textContent = category;
-        button.setAttribute("aria-pressed", String(selectedCategory === category));
-        button.addEventListener("click", () => {
-          selectedCategory = category;
-          buttonBox.querySelectorAll(".category-button").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-          document.getElementById("searchInput").value = "";
-          document.getElementById("colorFilter").value = "alle";
-          document.getElementById("mottoFilter").value = "alle";
-          document.querySelectorAll(".dynamic-filter").forEach((select) => { select.value = "alle"; });
-          filterBar.hidden = false;
-          window.filterProducts();
-          grid.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-        buttonBox.appendChild(button);
-      });
-    }
-
-    // Keep an independent catalog snapshot: `let allProducts` in index.html is
-    // module-scoped from other scripts and is therefore not available as window.allProducts.
-    async function loadCatalogSections() {
-      try {
-        const response = await fetch(`./produkte.json?t=${Date.now()}`, { cache: "no-store" });
-        if (!response.ok) throw new Error(`produkte.json HTTP-Status ${response.status}`);
-        const data = await response.json();
-        products = Array.isArray(data.produkte) ? data.produkte : [];
-        updateOffers();
-        updateCategories();
-      } catch (error) {
-        console.warn("Kategorien und Monatsangebote konnten nicht geladen werden.", error);
-      }
-    }
-
-    window.renderProducts = function (list) {
-      const available = Array.isArray(list) ? list : [];
-      if (!selectedCategory) {
-        prompt.hidden = false;
-        grid.hidden = true;
-        grid.replaceChildren();
-        return;
-      }
-      prompt.hidden = true;
-      grid.hidden = false;
-      originalRender(available.filter((product) => categoriesFor(product).includes(selectedCategory)));
-    };
-
-    loadCatalogSections();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
