@@ -70,11 +70,32 @@
   function createRecommendation(product) {
     const item = document.createElement("article");
     item.className = "cart-recommendation";
+
+    const imageWrap = document.createElement("button");
+    imageWrap.type = "button";
+    imageWrap.className = "cart-recommendation-image";
+    imageWrap.setAttribute("aria-label", `Produkt ${product.titel || "anzeigen"} öffnen`);
+    const image = document.createElement("img");
+    const imageSrc = typeof window.fixImagePath === "function" ? window.fixImagePath(product.bild || "") : (product.bild || "");
+    image.src = imageSrc;
+    image.alt = product.titel || "Produktbild";
+    image.loading = "lazy";
+    imageWrap.appendChild(image);
+    imageWrap.addEventListener("click", () => openProductDetail(product));
+
+    const body = document.createElement("div");
+    body.className = "cart-recommendation-body";
+
     const title = document.createElement("strong");
     title.textContent = product.titel || "Produkt";
+    title.addEventListener("click", () => openProductDetail(product));
+
     const meta = document.createElement("span");
     const price = Number(product.preis);
     meta.textContent = Number.isFinite(price) ? `${price.toFixed(2).replace(".", ",")} €` : "Preis auf Anfrage";
+
+    body.append(title, meta);
+
     const button = document.createElement("button");
     button.type = "button";
     button.className = "recommendation-add";
@@ -82,7 +103,8 @@
     button.addEventListener("click", () => {
       if (typeof window.addToCart === "function") window.addToCart(product.id);
     });
-    item.append(title, meta, button);
+
+    item.append(imageWrap, body, button);
     return item;
   }
 
@@ -162,8 +184,11 @@
       .cart-recommendations h3 { margin-bottom: .75rem; font-size: 1.05rem; }
       .cart-recommendation-list { display: grid; gap: .65rem; }
       .cart-recommendation { display: flex; align-items: center; gap: .7rem; padding: .7rem; border: 1px solid var(--border-color); border-radius: 12px; }
-      .cart-recommendation strong { flex: 1; min-width: 0; }
-      .cart-recommendation span { color: var(--text-muted); white-space: nowrap; }
+      .cart-recommendation-image { width: 64px; height: 64px; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: var(--card-bg); cursor: pointer; flex-shrink: 0; }
+      .cart-recommendation-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+      .cart-recommendation-body { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: .2rem; }
+      .cart-recommendation-body strong { cursor: pointer; }
+      .cart-recommendation-body span { color: var(--text-muted); }
       .recommendation-add { border: 0; border-radius: 9px; padding: .5rem .7rem; background: var(--purple); color: #fff; font-weight: 700; cursor: pointer; }
       @media (max-width: 480px) { .cart-recommendation { flex-wrap: wrap; } .cart-recommendation strong { flex-basis: 55%; } .cart-item-image-button { flex-basis: 58px; width: 58px; height: 58px; } }
     `;
