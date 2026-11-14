@@ -1,4 +1,4 @@
-/* Tag-based cart recommendations. Load after the storefront's inline script. */
+/* Tag-based cart recommendations and clickable cart-item previews. */
 (() => {
   "use strict";
 
@@ -23,6 +23,48 @@
       });
     }
     return tags;
+  }
+
+  function openProductDetail(product) {
+    if (!product) return;
+    if (typeof window.closeModal === "function") window.closeModal("cartModal");
+    if (typeof window.openProduct === "function") window.openProduct(product.id);
+  }
+
+  function decorateCartItems() {
+    const container = document.getElementById("cartItems");
+    if (!container || !products.length) return;
+
+    container.querySelectorAll(".cart-item").forEach((row) => {
+      const removeButton = row.querySelector("[data-remove-id]");
+      const productId = removeButton?.getAttribute("data-remove-id");
+      const product = products.find((item) => String(item.id) === String(productId));
+      if (!product) return;
+
+      row.dataset.productId = String(product.id);
+      row.classList.add("cart-item-clickable");
+      const info = row.querySelector(".cart-item-info");
+      const title = info?.querySelector("strong");
+      if (title) title.title = "Klicken, um die Produktansicht zu öffnen";
+
+      if (!row.querySelector(".cart-item-image-button")) {
+        const imageButton = document.createElement("button");
+        imageButton.type = "button";
+        imageButton.className = "cart-item-image-button";
+        imageButton.setAttribute("aria-label", `Großansicht von ${product.titel || "Produkt"} öffnen`);
+        const image = document.createElement("img");
+        image.src = typeof window.fixImagePath === "function" ? window.fixImagePath(product.bild || "") : (product.bild || "");
+        image.alt = product.titel || "Produktbild";
+        image.loading = "lazy";
+        image.onerror = () => { imageButton.hidden = true; };
+        imageButton.appendChild(image);
+        imageButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+          openProductDetail(product);
+        });
+        row.insertBefore(imageButton, row.firstChild);
+      }
+    });
   }
 
   function createRecommendation(product) {
@@ -94,6 +136,7 @@
       if (!response.ok) return;
       const data = await response.json();
       products = Array.isArray(data.produkte) ? data.produkte : [];
+      decorateCartItems();
       renderRecommendations();
     } catch (error) {
       console.warn("Warenkorb-Empfehlungen konnten nicht geladen werden.", error);
@@ -111,6 +154,10 @@
 
     const style = document.createElement("style");
     style.textContent = `
+      .cart-item-clickable { cursor: pointer; }
+      .cart-item-image-button { flex: 0 0 72px; width: 72px; height: 72px; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: var(--card-bg); cursor: zoom-in; }
+      .cart-item-image-button img { display: block; width: 100%; height: 100%; object-fit: cover; }
+      .cart-item-info strong { cursor: pointer; }
       .cart-recommendations { margin-top: 1.4rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
       .cart-recommendations h3 { margin-bottom: .75rem; font-size: 1.05rem; }
       .cart-recommendation-list { display: grid; gap: .65rem; }
@@ -118,14 +165,26 @@
       .cart-recommendation strong { flex: 1; min-width: 0; }
       .cart-recommendation span { color: var(--text-muted); white-space: nowrap; }
       .recommendation-add { border: 0; border-radius: 9px; padding: .5rem .7rem; background: var(--purple); color: #fff; font-weight: 700; cursor: pointer; }
-      @media (max-width: 480px) { .cart-recommendation { flex-wrap: wrap; } .cart-recommendation strong { flex-basis: 55%; } }
+      @media (max-width: 480px) { .cart-recommendation { flex-wrap: wrap; } .cart-recommendation strong { flex-basis: 55%; } .cart-item-image-button { flex-basis: 58px; width: 58px; height: 58px; } }
     `;
     document.head.appendChild(style);
+
+    cartItems.addEventListener("click", (event) => {
+      if (event.target.closest("button, [data-remove-id]")) return;
+      const row = event.target.closest(".cart-item[data-product-id]");
+      if (!row) return;
+      const product = products.find((item) => String(item.id) === row.dataset.productId);
+      openProductDetail(product);
+    });
+
+    const observer = new MutationObserver(() => decorateCartItems());
+    observer.observe(cartItems, { childList: true });
 
     if (typeof window.renderCart === "function") {
       const originalRenderCart = window.renderCart;
       window.renderCart = function (...args) {
         const result = originalRenderCart.apply(this, args);
+        decorateCartItems();
         renderRecommendations();
         return result;
       };
