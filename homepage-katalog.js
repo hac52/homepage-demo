@@ -123,18 +123,6 @@
     let selectedCategory = null;
     let products = [];
     const originalRender = window.renderProducts;
-    window.renderProducts = function (list) {
-      const available = Array.isArray(list) ? list : [];
-      if (!selectedCategory) {
-        grid.innerHTML = "";
-        grid.hidden = true;
-        prompt.hidden = false;
-        return;
-      }
-      prompt.hidden = true;
-      grid.hidden = false;
-      originalRender(available.filter((product) => categoriesFor(product).includes(selectedCategory)));
-    };
 
     function updateOffers() {
       const offerGrid = document.getElementById("monthlyOfferGrid");
@@ -179,20 +167,35 @@
       });
     }
 
-    const originalLoadProducts = window.loadProducts;
-    if (typeof originalLoadProducts === "function") {
-      // renderProducts is called after the catalog fetch; refresh the extra sections then.
-      const initialRender = window.renderProducts;
-      window.renderProducts = function (list) {
-        products = Array.isArray(window.allProducts) ? window.allProducts : products;
+    // Keep an independent catalog snapshot: `let allProducts` in index.html is
+    // module-scoped from other scripts and is therefore not available as window.allProducts.
+    async function loadCatalogSections() {
+      try {
+        const response = await fetch(`./produkte.json?t=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) throw new Error(`produkte.json HTTP-Status ${response.status}`);
+        const data = await response.json();
+        products = Array.isArray(data.produkte) ? data.produkte : [];
         updateOffers();
         updateCategories();
-        initialRender(list);
-      };
+      } catch (error) {
+        console.warn("Kategorien und Monatsangebote konnten nicht geladen werden.", error);
+      }
     }
-    products = Array.isArray(window.allProducts) ? window.allProducts : [];
-    updateOffers();
-    updateCategories();
+
+    window.renderProducts = function (list) {
+      const available = Array.isArray(list) ? list : [];
+      if (!selectedCategory) {
+        prompt.hidden = false;
+        grid.hidden = true;
+        grid.replaceChildren();
+        return;
+      }
+      prompt.hidden = true;
+      grid.hidden = false;
+      originalRender(available.filter((product) => categoriesFor(product).includes(selectedCategory)));
+    };
+
+    loadCatalogSections();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
